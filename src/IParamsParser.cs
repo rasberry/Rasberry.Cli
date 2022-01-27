@@ -9,7 +9,14 @@ namespace Rasberry.Cli
 		///<param name="inp">The input string</param>
 		///<param name="val">The output value</param>
 		///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
-		///<returns><c>bool</c> true if the parsing was successfull otherwise false</returns>
+		///<returns>true if the parsing was successfull otherwise false</returns>
 		bool TryParse<T>(string inp, out T val);
+
+		///<summary>Attempts to parse a string into a value</summary>
+		///<param name="type">The output Type</param>
+		///<param name="sub">The input string</param>
+		///<param name="val">The output value</param>
+		///<returns>true if the parsing was successfull otherwise false</returns>
+		bool TryParse(Type type, string inp, out object val);
 	}
 }

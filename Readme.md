@@ -8,3 +8,8 @@ Features include:
 
 ## How to use ##
 TODO
+
+## TODO ##
+* publish to a local nuget repo
+  * https://medium.com/@churi.vibhav/creating-and-using-a-local-nuget-package-repository-9f19475d6af8
+* add unit tests
