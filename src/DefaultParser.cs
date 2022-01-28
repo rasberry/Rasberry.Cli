@@ -175,7 +175,7 @@ namespace Rasberry.Cli
 			val = default;
 			//support hex numbers (with the 0x prefix)
 			if (s != null && allowHex && s.StartsWith("0x",StringComparison.InvariantCultureIgnoreCase)) {
-				bool worked = func(s[2..],NumberStyles.HexNumber,ifp,out T n);
+				bool worked = func(s.Substring(2),NumberStyles.HexNumber,ifp,out T n);
 				if (worked) {
 					val = n;
 					return true;
