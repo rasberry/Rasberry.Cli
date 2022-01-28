@@ -10,10 +10,15 @@ namespace Rasberry.Cli
 		///<summary>Attempts to parse a number or number% into a value</summary>
 		///<param name="num">The input string</param>
 		///<param name="val">The output value</param>
+		///<param name="provider">Optional <c>IFormatProvider</c> defaults to <c>CultureInfo.InvariantCulture.NumberFormat</c></param>
 		///<returns>true if the parsing was successfull otherwise false</returns>
 		public static bool TryParseNumberPercent(string num, out double val, IFormatProvider provider = null)
 		{
-			val = 0.0;
+			val = default;
+			if (num == null) {
+				return false;
+			}
+
 			bool isPercent = false;
 			if (num.EndsWith('%')) {
 				isPercent = true;
@@ -37,11 +42,12 @@ namespace Rasberry.Cli
 		///<summary>Attempts to parse a number or number% into a value</summary>
 		///<param name="num">The input string</param>
 		///<param name="val">The output value</param>
+		///<param name="provider">Optional <c>IFormatProvider</c> defaults to <c>CultureInfo.InvariantCulture.NumberFormat</c></param>
 		///<returns>true if the parsing was successfull otherwise false</returns>
-		public static bool TryParseNumberPercent(string num, out double? val)
+		public static bool TryParseNumberPercent(string num, out double? val, IFormatProvider provider = null)
 		{
 			val = null;
-			bool worked = TryParseNumberPercent(num,out double v);
+			bool worked = TryParseNumberPercent(num,out double v,provider);
 			if (worked) { val = v; }
 			return worked;
 		}
@@ -49,26 +55,30 @@ namespace Rasberry.Cli
 		///<summary>Attempts to parse an enum and will try to match the first letter</summary>
 		///<param name="arg">The input string</param>
 		///<param name="val">The output value</param>
+		///<param name="ignoreZero">Ignore the enum item with value 0. Usefull for skipping a 'not-defined' placeholder item</param>
 		///<returns>true if the parsing was successfull otherwise false</returns>
-		public static bool TryParseEnumFirstLetter<T>(string arg, out T val) where T : struct
+		public static bool TryParseEnumFirstLetter<T>(string arg, out T val, bool ignoreZero = false) where T : struct
 		{
 			bool worked = Enum.TryParse<T>(arg,true,out val);
 			//try to match the first letter if normal enum parse fails
 			if (!worked) {
-				string f = arg.Substring(0,1);
-				foreach(T e in Enum.GetValues(typeof(T))) {
-					string name = e.ToString();
-					if (name.Equals("none",StringComparison.OrdinalIgnoreCase)) {
-						continue;
-					}
-					string n = name.Substring(0,1);
-					if (f.Equals(n,StringComparison.OrdinalIgnoreCase)) {
-						val = e;
+				string fla = arg.Substring(0,1);
+				foreach(T item in Enum.GetValues(typeof(T))) {
+					string name = item.ToString();
+					if (ignoreZero && (int)(object)item == 0) { continue; }
+					string fln = name.Substring(0,1);
+					if (fla.Equals(fln,StringComparison.OrdinalIgnoreCase)) {
+						val = item;
 						return true;
 					}
 				}
 			}
-			return worked;
+
+			if (ignoreZero && (int)(object)val == 0) {
+				return false;
+			}
+
+			return worked && Enum.IsDefined(typeof(T),val);
 		}
 
 		///<summary>Attempts to parse a sequence of values (for example a set of space seperated numbers)</summary>

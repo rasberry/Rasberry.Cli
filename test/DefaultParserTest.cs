@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 
-namespace test
+namespace Rasberry.Cli.Tests
 {
 	[TestClass]
 	public class DefaultParserTest
@@ -140,14 +140,6 @@ namespace test
 			yield return new object[] { typeof(ulong),"-10" };
 		}
 
-		public enum FoodStuff
-		{
-			Donut = 0,
-			Milk = 2,
-			Fish = 3,
-			Bread = 4
-		}
-
 		[DataTestMethod]
 		[DataRow("bread",FoodStuff.Bread)]
 		[DataRow("Bread",FoodStuff.Bread)]
@@ -164,7 +156,7 @@ namespace test
 		[DataTestMethod]
 		[DataRow("b")]
 		[DataRow("-1")]
-		[DataRow("5")]
+		[DataRow("999")]
 		public void ParseEnumFail(string raw)
 		{
 			bool w = parser.TryParse(raw,out FoodStuff _);
