@@ -140,22 +140,23 @@ namespace Rasberry.Cli
 
 		///<summary>Tries to parse a parameter with two values</summary>
 		///<param name="switch">The parameter</param>
-		///<param name="tval">The first output value</param>
-		///<param name="uval">The second output value</param>
-		///<param name="tdef">An optional default value used if parsing fails</param>
-		///<param name="udef">An optional default value used if parsing fails</param>
-		///<param name="cond">A condition function that determines when second argument is required (defaults to always true)</param>
-		///<param name="tpar">An optional custom parser to be used on the first value</param>
-		///<param name="upar">An optional custom parser to be used on the second value</param>
+		///<param name="lefthVal">The first output value</param>
+		///<param name="rightVal">The second output value</param>
+		///<param name="lefthDef">An optional default value used if parsing fails</param>
+		///<param name="rightDef">An optional default value used if parsing fails</param>
+		///<param name="condition">A condition function that determines when second argument is required (defaults to always true)</param>
+		///<param name="lefthPar">An optional custom parser to be used on the first value</param>
+		///<param name="rightPar">An optional custom parser to be used on the second value</param>
 		///<typeparam name="T">The output type of the first value attempting to be parsed</typeparam>
 		///<typeparam name="U">The output type of the second value attempting to be parsed</typeparam>
 		///<returns><c>Result</c> value</returns>
-		public Result Default<T,U>(string @switch,out T tval, out U uval,
-			T tdef = default, U udef = default, Func<T,bool> Cond = null,
-			Parser<T> tpar = null, Parser<U> upar = null)
+
+		public Result Default<T,U>(string @switch,out T lefthVal, out U rightVal,
+			T lefthDef = default, U rightDef = default, Func<T,bool> condition = null,
+			Parser<T> lefthPar = null, Parser<U> rightPar = null)
 		{
-			tval = tdef;
-			uval = udef;
+			lefthVal = lefthDef;
+			rightVal = rightDef;
 			int i = Args.IndexOf(@switch);
 			if (i == -1) {
 				return Result.Missing;
@@ -163,13 +164,13 @@ namespace Rasberry.Cli
 			if (i+1 >= Args.Count) {
 				return Result.MissingArgument;
 			}
-			if (tpar == null) { tpar = TryParse; }
-			if (!tpar(Args[i+1],out tval)) {
+			if (lefthPar == null) { lefthPar = TryParse; }
+			if (!lefthPar(Args[i+1],out lefthVal)) {
 				return Result.UnParsable;
 			}
 
 			//if condition function returns false - we don't look for a second arg
-			if (Cond != null && !Cond(tval)) {
+			if (condition != null && !condition(lefthVal)) {
 				Args.RemoveAt(i+1);
 				Args.RemoveAt(i);
 				return Result.Good;
@@ -178,8 +179,8 @@ namespace Rasberry.Cli
 			if (i+2 >= Args.Count) {
 				return Result.MissingArgument;
 			}
-			if (upar == null) { upar = TryParse; }
-			if (!upar(Args[i+2],out uval)) {
+			if (rightPar == null) { rightPar = TryParse; }
+			if (!rightPar(Args[i+2],out rightVal)) {
 				return Result.UnParsable;
 			}
 			Args.RemoveAt(i+2);
@@ -196,11 +197,12 @@ namespace Rasberry.Cli
 		///<returns><c>Result</c> value</returns>
 		public Result Expect<T>(out T val)
 		{
-			if (Result.Good != Default(out val)) {
-				//turn Missing into MissingArgument
+			Result r = Default(out val);
+			//turn Missing into MissingArgument
+			if (r == Result.Missing) {
 				return Result.MissingArgument;
 			}
-			return Result.Good;
+			return r;
 		}
 
 		///<summary>Expects to find the given parameter with no value</summary>
@@ -209,11 +211,11 @@ namespace Rasberry.Cli
 		public Result Expect(string @switch)
 		{
 			var has = Has(@switch);
-			if (Result.Good != has) {
-				//turn Missing into MissingArgument
+			//turn Missing into MissingArgument
+			if (has == Result.Missing) {
 				return Result.MissingArgument;
 			}
-			return Result.Good;
+			return has;
 		}
 
 		///<summary>Expects to parse a parameter with a single value</summary>
@@ -225,30 +227,31 @@ namespace Rasberry.Cli
 		public Result Expect<T>(string @switch, out T val,Parser<T> par = null)
 		{
 			var has = Default(@switch,out val, par:par);
-			if (Result.Good != has) {
-				//turn Missing into MissingArgument
+			//turn Missing into MissingArgument
+			if (has == Result.Missing) {
 				return Result.MissingArgument;
 			}
-			return Result.Good;
+			return has;
 		}
 
 		///<summary>Expects to parse a parameter with two values</summary>
 		///<param name="switch">The name of the parameter</param>
-		///<param name="tval">The first output value</param>
-		///<param name="uval">The second output value</param>
-		///<param name="tpar">An optional custom parser to be used on the first value</param>
-		///<param name="upar">An optional custom parser to be used on the second value</param>
-		///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
-		///<typeparam name="U">The output type of the value attempting to be parsed</typeparam>
+		///<param name="lefthVal">The first output value</param>
+		///<param name="rightVal">The second output value</param>
+		///<param name="lefthPar">An optional custom parser to be used on the first value</param>
+		///<param name="rightPar">An optional custom parser to be used on the second value</param>
+		///<typeparam name="T">The output type of the first value attempting to be parsed</typeparam>
+		///<typeparam name="U">The output type of the second value attempting to be parsed</typeparam>
 		///<returns><c>Result</c> value</returns>
-		public Result Expect<T,U>(string @switch, out T tval, out U uval,Parser<T> tpar = null,Parser<U> upar = null)
+		public Result Expect<T,U>(string @switch, out T lefthVal, out U rightVal,
+			Parser<T> lefthPar = null,Parser<U> rightPar = null)
 		{
-			var has = Default(@switch,out tval,out uval, tpar:tpar, upar:upar);
-			if (Result.Good != has) {
-				//turn Missing into MissingArgument
+			var has = Default(@switch,out lefthVal,out rightVal, lefthPar:lefthPar, rightPar:rightPar);
+			//turn Missing into MissingArgument
+			if (has == Result.Missing) {
 				return Result.MissingArgument;
 			}
-			return Result.Good;
+			return has;
 		}
 	}
 }
