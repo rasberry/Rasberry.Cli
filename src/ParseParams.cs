@@ -19,19 +19,6 @@ namespace Rasberry.Cli
 			MissingArgument = 3
 		}
 
-		/// <summary>Constructor for Params using the default parser</summary>
-		public ParseParams()
-		{
-			ParserInst = new DefaultParser();
-		}
-
-		/// <summary>Constructor for Params using a custom parser</summary>
-		///<param name="customParser">A custom parser instance</param>
-		public ParseParams(IParamsParser customParser)
-		{
-			ParserInst = customParser;
-		}
-
 		//private parser instance
 		readonly IParamsParser ParserInst;
 
@@ -46,9 +33,16 @@ namespace Rasberry.Cli
 
 		///<summary>Constructor for Params class</summary>
 		///<param name="args">String array of arguments that have already been seperated</param>
-		public ParseParams(string[] args)
+		public ParseParams(string[] args) : this (args,null)
+		{
+		}
+
+		/// <summary>Constructor for Params using a custom parser</summary>
+		///<param name="customParser">A custom parser instance</param>
+		public ParseParams(string[] args, IParamsParser customParser)
 		{
 			Args = new List<string>(args);
+			ParserInst = customParser ?? new DefaultParser();
 		}
 
 		// Internal storage for arguments

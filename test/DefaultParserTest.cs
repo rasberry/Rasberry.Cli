@@ -138,6 +138,8 @@ namespace Rasberry.Cli.Tests
 			yield return new object[] { typeof(ushort),"-10" };
 			yield return new object[] { typeof(uint),"-10" };
 			yield return new object[] { typeof(ulong),"-10" };
+
+			yield return new object[] { typeof(int),"0x0Q" };
 		}
 
 		[DataTestMethod]
