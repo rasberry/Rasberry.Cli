@@ -11,44 +11,62 @@ namespace Rasberry.Cli
 		///<summary>Sets the position for the description text</summary>
 		public static int DescriptionColumn { get; set; } = 30;
 
+		///<summary>Gets or Sets the character width of the shell</summary>
+		public static int OutputWidth { get; set; } = InitOutputWidth();
+
+		static int InitOutputWidth()
+		{
+			return Console.IsOutputRedirected ? int.MaxValue : Console.BufferWidth;
+		}
+
 		///<summary>Prints a parameter name and description. The description may wrap</summary>
 		///<param name="sb">The destination StringBuilder</param>
 		///<param name="level">The indention level for the parameter name</param>
 		///<param name="name">The name of the parameter</param>
 		///<param name="desc">The description of the parameter (optional)</param>
 		///<returns>returns the StringBuilder for chaining</returns>
-		public static StringBuilder WL(this StringBuilder sb, int level, string name, string desc = "")
+		public static StringBuilder ND(this StringBuilder sb, int level, string name, string desc = "")
 		{
-			int pad = level;
+			if (level < 0) { level = 0; }
 			sb
-				.Append(' ',pad)
+				.Append(' ',level)
 				.Append(name)
 			;
 			if (!string.IsNullOrWhiteSpace(desc)) {
+				int pad = DescriptionColumn - name.Length - level;
 				sb
-					.Append(' ',DescriptionColumn - name.Length - pad)
+					.Append(' ',pad > 0 ? pad : 0)
 					.AppendWrap(DescriptionColumn,desc)
 				;
+			}
+			else {
+				sb.AppendLine();
 			}
 			return sb;
 		}
 
 		///<summary>Prints a line of text with wrapping</summary>
 		///<param name="sb">The destination StringBuilder</param>
-		///<param name="level">The indention level for the parameter name (defaults to 0)</param>
+		///<param name="level">The indention level the text (defaults to 0)</param>
 		///<param name="text">The text to print. if null only a new line is printed</param>
 		///<returns>returns the StringBuilder for chaining</returns>
-		public static StringBuilder WL(this StringBuilder sb, int level = 0, string text = null)
+		public static StringBuilder WT(this StringBuilder sb, int level = 0, string text = null)
 		{
-			return text == null ? sb.AppendLine() : sb.AppendWrap(level,text);
+			if (text == null) {
+				sb.AppendLine();
+			}
+			else {
+				sb
+					.Append(' ',level)
+					.AppendWrap(level,text)
+				;
+			}
+			return sb;
 		}
 
 		static StringBuilder AppendWrap(this StringBuilder self, int offset, string m)
 		{
-			int w = Console.IsOutputRedirected
-				? int.MaxValue
-				: Console.BufferWidth - 1 - offset
-			;
+			int w = OutputWidth - 1 - offset;
 			int c = 0;
 			int l = m.Length;
 
@@ -96,7 +114,8 @@ namespace Rasberry.Cli
 		///<param name="descriptionMap">A map of descriptions for each enum value</param>
 		///<param name="nameMap">A map of replacement names for each enum value</param>
 		///<param name="excludeZero">Exclude the zero value entry</param>
-		public static void PrintEnum<T>(this StringBuilder sb, int level = 0, Func<T,string> descriptionMap = null,
+		///<returns>returns the StringBuilder for chaining</returns>
+		public static StringBuilder PrintEnum<T>(this StringBuilder sb, int level = 0, Func<T,string> descriptionMap = null,
 			Func<T,string> nameMap = null, bool excludeZero = false) where T : struct
 		{
 			var allEnums = EnumAll<T>(excludeZero).ToList();
@@ -108,8 +127,9 @@ namespace Rasberry.Cli
 				string pad = new string(' ',padLength);
 				string eName = nameMap == null ? e.ToString() : nameMap(e);
 				string eDesc = descriptionMap == null ? "" : descriptionMap(e);
-				sb.WL(level,$"{pad}{sValue}. {eName}",eDesc);
+				sb.ND(level,$"{pad}{sValue}. {eName}",eDesc);
 			}
+			return sb;
 		}
 	}
 }
