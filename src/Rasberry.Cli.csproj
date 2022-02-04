@@ -10,6 +10,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <RepositoryUrl>https://github.com/rasberry/Rasberry.Cli.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <DebugType>portable</DebugType>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -18,4 +19,8 @@
     <Authors>rasberry</Authors>
     <Description>A library with some helpful functions for command line programs</Description>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+  </ItemGroup>
 </Project>

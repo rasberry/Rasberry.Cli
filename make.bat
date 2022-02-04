@@ -19,15 +19,23 @@ goto :EOF
 :pack
 call dotnet pack -c Release
 
-::use existing nuget cache folder
+::put packages in existing .nuget folder
 set NUGETROOT="%userprofile%\.nuget"
 for %%n in ("%~dp0src\bin\Release\*.nupkg") do (
 	echo "Installing %%n"
-	call nuget add "%%n" -source "%NUGETROOT:"=%\packages"
+	call nuget add "%%n" -source "%NUGETROOT:"=%\nuget"
 )
 ::put symbols under sibling 'symbols' folder
 for %%n in ("%~dp0src\bin\Release\*.snupkg") do (
 	echo "Installing %%n"
 	call nuget add "%%n" -source "%NUGETROOT:"=%\symbols"
 )
+goto :EOF
+
+:depack
+if "%~1"=="" echo "missing package version" && goto :EOF
+
+set NUGETROOT="%userprofile%\.nuget"
+call nuget delete "Rasberry.Cli" "%~1" -NonInteractive -Source "%NUGETROOT:"=%\nuget"
+call nuget delete "Rasberry.Cli" "%~1" -NonInteractive -Source "%NUGETROOT:"=%\symbols"
 goto :EOF
