@@ -1,7 +1,15 @@
 @echo off
 setlocal
-if "%~1"=="" goto :EOF
+if "%~1"=="" goto usage
 call :%*
+goto :EOF
+
+:usage
+echo Usage:
+echo %~n0 cover             run coverage
+echo %~n0 pack (version)    create nuget package and register package locally
+echo %~n0 depack (version)  unregister package from local repo
+
 goto :EOF
 
 :cover
@@ -17,7 +25,9 @@ call reportgenerator "-reports:test/TestResults/coverage.cobertura.xml" "-target
 goto :EOF
 
 :pack
-call dotnet pack -c Release
+if "%~1"=="" echo "missing package version" && goto :EOF
+
+call dotnet pack -c Release -p:PackageVersion="%~1"
 
 ::put packages in existing .nuget folder
 set NUGETROOT="%userprofile%\.nuget"

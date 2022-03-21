@@ -15,7 +15,6 @@
 
   <PropertyGroup>
     <PackageId>Rasberry.Cli</PackageId>
-    <Version>1.0.0</Version>
     <Authors>rasberry</Authors>
     <Description>A library with some helpful functions for command line programs</Description>
   </PropertyGroup>
