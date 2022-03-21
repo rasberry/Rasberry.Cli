@@ -35,6 +35,8 @@ namespace Rasberry.Cli.Tests
 			yield return new object[] { typeof(byte),"1e+1",(byte)10 };
 			yield return new object[] { typeof(byte),"10.0",(byte)10 };
 			yield return new object[] { typeof(byte),"0x0A",(byte)10 };
+			yield return new object[] { typeof(byte),"0b11",(byte)3 };
+			yield return new object[] { typeof(byte),"0b011",(byte)3 };
 
 			yield return new object[] { typeof(sbyte),"-32",(sbyte)-32 };
 			yield return new object[] { typeof(sbyte),"0",(sbyte)0 };
@@ -68,16 +70,19 @@ namespace Rasberry.Cli.Tests
 			yield return new object[] { typeof(short),"0", (short)0 };
 			yield return new object[] { typeof(short),"-32768",short.MinValue };
 			yield return new object[] { typeof(short),"32767",short.MaxValue };
+			yield return new object[] { typeof(short),"0b11", (short)3 };
 
 			yield return new object[] { typeof(ushort),"0xA", (ushort)10 };
 			yield return new object[] { typeof(ushort),"0",ushort.MinValue };
 			yield return new object[] { typeof(ushort),"65535",ushort.MaxValue };
+			yield return new object[] { typeof(ushort),"0b11", (ushort)3 };
 
 			yield return new object[] { typeof(int),"0xA", 10 };
 			yield return new object[] { typeof(int),"-10", -10 };
 			yield return new object[] { typeof(int),"0", 0 };
 			yield return new object[] { typeof(int),"-2147483648",int.MinValue };
 			yield return new object[] { typeof(int),"2147483647",int.MaxValue };
+			yield return new object[] { typeof(int),"0b11", 3 };
 
 			yield return new object[] { typeof(uint),"0xA", 10u };
 			yield return new object[] { typeof(uint),"0",uint.MinValue };
@@ -88,10 +93,12 @@ namespace Rasberry.Cli.Tests
 			yield return new object[] { typeof(long),"0", 0L };
 			yield return new object[] { typeof(long),"-9223372036854775808",long.MinValue };
 			yield return new object[] { typeof(long),"9223372036854775807",long.MaxValue };
+			yield return new object[] { typeof(long),"0b11", 3L };
 
-			yield return new object[] { typeof(ulong),"0xA", 10ul };
+			yield return new object[] { typeof(ulong),"0xA", 10uL };
 			yield return new object[] { typeof(ulong),"0",ulong.MinValue };
 			yield return new object[] { typeof(ulong),"18446744073709551615",ulong.MaxValue };
+			yield return new object[] { typeof(ulong),"0b11", 3uL };
 
 			yield return new object[] { typeof(bool?), "true", true };
 			yield return new object[] { typeof(int?), "0xA", 10 };
@@ -140,6 +147,7 @@ namespace Rasberry.Cli.Tests
 			yield return new object[] { typeof(ulong),"-10" };
 
 			yield return new object[] { typeof(int),"0x0Q" };
+			yield return new object[] { typeof(int),"0b012" };
 		}
 
 		[DataTestMethod]
@@ -152,7 +160,6 @@ namespace Rasberry.Cli.Tests
 			bool w = parser.TryParse(raw,out FoodStuff food);
 			Assert.IsTrue(w);
 			Assert.AreEqual(value,food);
-
 		}
 
 		[DataTestMethod]

@@ -13,10 +13,9 @@ namespace Rasberry.Cli
 	public class ProgressBar : IDisposable, IProgress<double> {
 
 		public void Dispose() {
-			lock (timer) {
-				disposed = true;
-				UpdateText(string.Empty);
-			}
+			disposed = true;
+			UpdateText(string.Empty);
+			timer.Dispose();
 		}
 
 		public ProgressBar() {
@@ -40,23 +39,21 @@ namespace Rasberry.Cli
 		public string Prefix { get; set; } = null;
 
 		void TimerHandler(object state) {
-			lock (timer) {
-				if (disposed) return;
+			if (disposed) { return; }
 
-				// Make sure value is in [0..1] range
-				double value = Math.Clamp(currentProgress,0,1);
+			// Make sure value is in [0..1] range
+			double value = Math.Clamp(currentProgress,0,1);
 
-				int progressBlockCount = (int) (value * blockCount);
-				int percent = (int) (value * 100);
-				string filled = new string('#', progressBlockCount);
-				string spacer = new string('-', blockCount - progressBlockCount);
-				char signal = animation[animationIndex++ % animation.Length];
+			int progressBlockCount = (int) (value * blockCount);
+			int percent = (int) (value * 100);
+			string filled = new string('#', progressBlockCount);
+			string spacer = new string('-', blockCount - progressBlockCount);
+			char signal = animation[animationIndex++ % animation.Length];
 
-				string text = $"{Prefix}[{filled}{spacer}] {percent,3}% {signal}";
-				UpdateText(text);
+			string text = $"{Prefix}[{filled}{spacer}] {percent,3}% {signal}";
+			UpdateText(text);
 
-				ResetTimer();
-			}
+			ResetTimer();
 		}
 
 		void UpdateText(string text) {
