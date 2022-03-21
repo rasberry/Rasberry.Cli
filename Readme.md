@@ -56,4 +56,13 @@ using (var progress = new ProgressBar()) {
 }
 ```
 
+## Additional Notes ##
+### Parsing numbers ###
+* Parsing numbers to number types (int,float,etc..) uses NumberStyles.Any (see [details](https://docs.microsoft.com/en-us/dotnet/standard/base-types/parsing-numeric))
+* The parser also looks for '0x' prefixed strings and parses those as hexdecimal numbers.
+* Parsing of binary numbers prefixed by '0b' is also supported.
+
+### Progress bar ###
+The progress bar is a modified version of [this gist](https://gist.github.com/DanielSWolf/0ab6a96899cc5377bf54) by [Daniel Wolf](https://github.com/DanielSWolf) - [MIT License](http://opensource.org/licenses/MIT)
+
 ## TODO ##

@@ -170,17 +170,33 @@ namespace Rasberry.Cli
 		}
 
 		//saving some typing for types with NumberStyles
-		bool TryNumber<T>(TryParseWrapped<T> func, string s, out object val, bool allowHex = true)
+		const int PrefixLength = 2;
+		const int BinaryRadix = 2;
+		bool TryNumber<T>(TryParseWrapped<T> func, string s, out object val, bool allowHexBin = true)
 		{
 			val = default;
 			//support hex numbers (with the 0x prefix)
-			if (s != null && allowHex && s.StartsWith("0x",StringComparison.InvariantCultureIgnoreCase)) {
-				bool worked = func(s.Substring(2),NumberStyles.HexNumber,ifp,out T n);
+			if (s != null && allowHexBin && s.StartsWith("0x",StringComparison.InvariantCultureIgnoreCase)) {
+				var plain = s.Substring(PrefixLength);
+				bool worked = func(plain,NumberStyles.HexNumber,ifp,out T n);
 				if (worked) {
 					val = n;
 					return true;
 				}
 				return false;
+			}
+			//support binary numbers (with the 0b prefix)
+			else if (s != null && allowHexBin && s.StartsWith("0b",StringComparison.InvariantCultureIgnoreCase)) {
+				var plain = s.Substring(PrefixLength);
+				// sigh.. no NumberStyles.BinaryNumber :/
+				try {
+					//must pick a type here.. going with worst case
+					long n = Convert.ToInt64(plain,BinaryRadix);
+					val = Convert.ChangeType(n,typeof(T));
+					return true;
+				} catch {
+					return false;
+				}
 			}
 			//otherwise try normal numbers
 			else {
