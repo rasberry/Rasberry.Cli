@@ -155,6 +155,22 @@ namespace Rasberry.Cli.Tests
 		}
 
 		[TestMethod]
+		public void TestDefaultMultiTwo()
+		{
+			string[] args = new[] { "-w", "1", "hi", "-x" };
+			var p = new ParseParams(args);
+
+			ParseParams.Result r;
+			r = p.Default(new[]{"--wide","-w"}, out double num, out string s);
+			Assert.IsTrue(r.IsGood());
+			Assert.AreEqual(1.0,num);
+			Assert.AreEqual("hi",s);
+
+			var rem = p.Remaining();
+			Assert.IsTrue(rem.Length == 1);
+		}
+
+		[TestMethod]
 		public void TestDefaultTwoMissingArgument()
 		{
 			string[] args = new[] { "-w", "1",};
@@ -174,7 +190,7 @@ namespace Rasberry.Cli.Tests
 
 			ParseParams.Result r;
 			r = p.Default(@switch:"-w",
-				lefthVal:out double num, rightVal:out string s,
+				leftVal:out double num, rightVal:out string s,
 				condition: (double d) => {
 					return false; //second argument optional
 				}
@@ -192,7 +208,7 @@ namespace Rasberry.Cli.Tests
 
 			ParseParams.Result r;
 			r = p.Default(@switch:"-w",
-				lefthVal:out double num, rightVal:out string s,
+				leftVal:out double num, rightVal:out string s,
 				condition: (double d) => {
 					return true; //second argument required
 				}

@@ -93,7 +93,7 @@ namespace Rasberry.Cli
 		}
 
 		///<summary>Tries to parse a parameter with a single value</summary>
-		///<param name="switch">The parameter</param>
+		///<param name="switch">The parameter name</param>
 		///<param name="val">The output value</param>
 		///<param name="def">An optional default value used if parsing fails</param>
 		///<param name="par">An optional custom parser to be used on the value</param>
@@ -119,7 +119,7 @@ namespace Rasberry.Cli
 		}
 
 		///<summary>Tries to parse a multi-named parameter with a single value</summary>
-		///<param name="switch">The parameter</param>
+		///<param name="switch">The parameter name(s)</param>
 		///<param name="val">The output value</param>
 		///<param name="def">An optional default value used if parsing fails</param>
 		///<param name="par">An optional custom parser to be used on the value</param>
@@ -127,7 +127,6 @@ namespace Rasberry.Cli
 		///<returns><c>Result</c> value</returns>
 		public Result Default<T>(string[] @switch,out T val,T def = default,Parser<T> par = null)
 		{
-			val = default;
 			foreach(string sw in @switch) {
 				var r = Default<T>(sw,out val,def,par);
 				// Log.Debug($"Default sw={sw} r={r} val={val}");
@@ -135,27 +134,27 @@ namespace Rasberry.Cli
 				if (r == Result.UnParsable) { return r; }
 				if (r == Result.Good) { return r; }
 			}
+			val = default;
 			return Result.Missing;
 		}
 
 		///<summary>Tries to parse a parameter with two values</summary>
-		///<param name="switch">The parameter</param>
-		///<param name="lefthVal">The first output value</param>
+		///<param name="switch">The parameter name</param>
+		///<param name="leftVal">The first output value</param>
 		///<param name="rightVal">The second output value</param>
-		///<param name="lefthDef">An optional default value used if parsing fails</param>
+		///<param name="leftDef">An optional default value used if parsing fails</param>
 		///<param name="rightDef">An optional default value used if parsing fails</param>
 		///<param name="condition">A condition function that determines when second argument is required (defaults to always true)</param>
-		///<param name="lefthPar">An optional custom parser to be used on the first value</param>
+		///<param name="leftPar">An optional custom parser to be used on the first value</param>
 		///<param name="rightPar">An optional custom parser to be used on the second value</param>
 		///<typeparam name="T">The output type of the first value attempting to be parsed</typeparam>
 		///<typeparam name="U">The output type of the second value attempting to be parsed</typeparam>
 		///<returns><c>Result</c> value</returns>
-
-		public Result Default<T,U>(string @switch,out T lefthVal, out U rightVal,
-			T lefthDef = default, U rightDef = default, Func<T,bool> condition = null,
-			Parser<T> lefthPar = null, Parser<U> rightPar = null)
+		public Result Default<T,U>(string @switch,out T leftVal, out U rightVal,
+			T leftDef = default, U rightDef = default, Func<T,bool> condition = null,
+			Parser<T> leftPar = null, Parser<U> rightPar = null)
 		{
-			lefthVal = lefthDef;
+			leftVal = leftDef;
 			rightVal = rightDef;
 			int i = Args.IndexOf(@switch);
 			if (i == -1) {
@@ -164,13 +163,13 @@ namespace Rasberry.Cli
 			if (i+1 >= Args.Count) {
 				return Result.MissingArgument;
 			}
-			if (lefthPar == null) { lefthPar = TryParse; }
-			if (!lefthPar(Args[i+1],out lefthVal)) {
+			if (leftPar == null) { leftPar = TryParse; }
+			if (!leftPar(Args[i+1],out leftVal)) {
 				return Result.UnParsable;
 			}
 
 			//if condition function returns false - we don't look for a second arg
-			if (condition != null && !condition(lefthVal)) {
+			if (condition != null && !condition(leftVal)) {
 				Args.RemoveAt(i+1);
 				Args.RemoveAt(i);
 				return Result.Good;
@@ -187,6 +186,34 @@ namespace Rasberry.Cli
 			Args.RemoveAt(i+1);
 			Args.RemoveAt(i);
 			return Result.Good;
+		}
+
+		///<summary>Tries to parse a parameter with two values</summary>
+		///<param name="switch">The parameter name(s)</param>
+		///<param name="leftVal">The first output value</param>
+		///<param name="rightVal">The second output value</param>
+		///<param name="leftDef">An optional default value used if parsing fails</param>
+		///<param name="rightDef">An optional default value used if parsing fails</param>
+		///<param name="condition">A condition function that determines when second argument is required (defaults to always true)</param>
+		///<param name="leftPar">An optional custom parser to be used on the first value</param>
+		///<param name="rightPar">An optional custom parser to be used on the second value</param>
+		///<typeparam name="T">The output type of the first value attempting to be parsed</typeparam>
+		///<typeparam name="U">The output type of the second value attempting to be parsed</typeparam>
+		///<returns><c>Result</c> value</returns>
+		public Result Default<T,U>(string[] @switch,out T leftVal, out U rightVal,
+			T leftDef = default, U rightDef = default, Func<T,bool> condition = null,
+			Parser<T> leftPar = null, Parser<U> rightPar = null)
+		{
+			foreach(string sw in @switch) {
+				var r = Default<T,U>(sw,out leftVal,out rightVal,leftDef,rightDef,condition,leftPar,rightPar);
+				// Log.Debug($"Default sw={sw} r={r} val={val}");
+				if (r == Result.MissingArgument) { return r; }
+				if (r == Result.UnParsable) { return r; }
+				if (r == Result.Good) { return r; }
+			}
+			leftVal = default;
+			rightVal = default;
+			return Result.Missing;
 		}
 
 		///<summary>Expects to parse a value without an accompanying parameter</summary>
@@ -236,17 +263,17 @@ namespace Rasberry.Cli
 
 		///<summary>Expects to parse a parameter with two values</summary>
 		///<param name="switch">The name of the parameter</param>
-		///<param name="lefthVal">The first output value</param>
+		///<param name="leftVal">The first output value</param>
 		///<param name="rightVal">The second output value</param>
-		///<param name="lefthPar">An optional custom parser to be used on the first value</param>
+		///<param name="leftPar">An optional custom parser to be used on the first value</param>
 		///<param name="rightPar">An optional custom parser to be used on the second value</param>
 		///<typeparam name="T">The output type of the first value attempting to be parsed</typeparam>
 		///<typeparam name="U">The output type of the second value attempting to be parsed</typeparam>
 		///<returns><c>Result</c> value</returns>
-		public Result Expect<T,U>(string @switch, out T lefthVal, out U rightVal,
-			Parser<T> lefthPar = null,Parser<U> rightPar = null)
+		public Result Expect<T,U>(string @switch, out T leftVal, out U rightVal,
+			Parser<T> leftPar = null,Parser<U> rightPar = null)
 		{
-			var has = Default(@switch,out lefthVal,out rightVal, lefthPar:lefthPar, rightPar:rightPar);
+			var has = Default(@switch,out leftVal,out rightVal, leftPar:leftPar, rightPar:rightPar);
 			//turn Missing into MissingArgument
 			if (has == Result.Missing) {
 				return Result.MissingArgument;

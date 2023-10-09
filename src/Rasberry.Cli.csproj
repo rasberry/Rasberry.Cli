@@ -16,7 +16,7 @@
   <PropertyGroup>
     <PackageId>Rasberry.Cli</PackageId>
     <Authors>rasberry</Authors>
-    <Description>A library with some helpful functions for command line programs</Description>
+    <Description>A library with some helpful functions for command line parsing</Description>
   </PropertyGroup>
 
   <ItemGroup>
