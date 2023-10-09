@@ -174,9 +174,10 @@ namespace Rasberry.Cli
 		const int BinaryRadix = 2;
 		bool TryNumber<T>(TryParseWrapped<T> func, string s, out object val, bool allowHexBin = true)
 		{
+			var comp = StringComparison.InvariantCultureIgnoreCase;
 			val = default;
 			//support hex numbers (with the 0x prefix)
-			if (s != null && allowHexBin && s.StartsWith("0x",StringComparison.InvariantCultureIgnoreCase)) {
+			if (s != null && allowHexBin && s.StartsWith("0x",comp)) {
 				var plain = s.Substring(PrefixLength);
 				bool worked = func(plain,NumberStyles.HexNumber,ifp,out T n);
 				if (worked) {
@@ -186,7 +187,7 @@ namespace Rasberry.Cli
 				return false;
 			}
 			//support binary numbers (with the 0b prefix)
-			else if (s != null && allowHexBin && s.StartsWith("0b",StringComparison.InvariantCultureIgnoreCase)) {
+			else if (s != null && allowHexBin && s.StartsWith("0b",comp)) {
 				var plain = s.Substring(PrefixLength);
 				// sigh.. no NumberStyles.BinaryNumber :/
 				try {
