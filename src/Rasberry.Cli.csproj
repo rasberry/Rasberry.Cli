@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>net7.0</TargetFrameworks>
     <EnablePackageValidation>true</EnablePackageValidation>
     <IsPublishable>true</IsPublishable>
     <IncludeSymbols>true</IncludeSymbols>
@@ -16,7 +16,8 @@
   <PropertyGroup>
     <PackageId>Rasberry.Cli</PackageId>
     <Authors>rasberry</Authors>
-    <Description>A library with some helpful functions for command line programs</Description>
+    <Description>A library with some helpful functions for command line parsing</Description>
+    <VersionPrefix>2.0.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
