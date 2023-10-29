@@ -129,4 +129,35 @@ public class TestExtensions
 		Assert.IsFalse(isUnParsable);
 		Assert.IsTrue(isMissingArgument);
 	}
+
+	[TestMethod]
+	public void TestWhenExpectFail()
+	{
+		string[] args = new[] { "-x", "2"};
+		var p = new ParseParams(args);
+
+		bool isBad = false;
+		bool isGood = false;
+		bool isMissing = false;
+		bool isInvalid = false;
+		bool isUnParsable = false;
+		bool isMissingArgument = false;
+
+		var check = p.Expect<double>("-z")
+			.WhenBad((n) => {isBad = true;})
+			.WhenGood((n) => {isGood = true;})
+			.WhenMissing((n) => {isMissing = true; })
+			.WhenInvalid((n) => {isInvalid = true; })
+			.WhenUnParsable((n) => {isUnParsable = true; })
+			.WhenMissingArgument((n) => {isMissingArgument = true; })
+			.IsBad();
+
+		Assert.IsTrue(check);
+		Assert.IsTrue(isBad);
+		Assert.IsFalse(isGood);
+		Assert.IsFalse(isMissing);
+		Assert.IsTrue(isInvalid);
+		Assert.IsFalse(isUnParsable);
+		Assert.IsTrue(isMissingArgument);
+	}
 }

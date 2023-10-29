@@ -25,9 +25,7 @@ call reportgenerator "-reports:test/TestResults/coverage.cobertura.xml" "-target
 goto :EOF
 
 :pack
-if "%~1"=="" echo "missing package version" && goto :EOF
-
-call dotnet pack -c Release -p:PackageVersion="%~1"
+call dotnet pack -c Release
 
 ::put packages in existing .nuget folder
 set NUGETROOT="%userprofile%\.nuget"

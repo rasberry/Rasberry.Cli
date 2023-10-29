@@ -68,7 +68,10 @@ public sealed class ParseParams
 		);
 	}
 
-	///<summary>Tries to parse a value without an accompanying parameter</summary>
+	///<summary>
+	/// Tries to parse a value without an accompanying parameter
+	/// The result Error property may be set if parsing failed
+	///</summary>
 	///<param name="def">An optional default value used if parsing fails</param>
 	///<param name="par">An optional custom parser to be used on the value</param>
 	///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
@@ -80,10 +83,10 @@ public sealed class ParseParams
 			return new ParseResult<T>(Result.Missing, null, val);
 		}
 		string curr = Args[0];
-		if (par == null) { par = Parse<T>; }
+		if (par == null) { par = ParserInst.Parse<T>; }
 
 		Exception err;
-		(val, err) = ParseAndCapture(curr, par ?? Parse<T>, def);
+		(val, err) = ParseAndCapture(curr, par ?? ParserInst.Parse<T>, def);
 
 		if (err != null) {
 			return new ParseResult<T>(Result.UnParsable, null, val, err);
@@ -92,7 +95,10 @@ public sealed class ParseParams
 		return new ParseResult<T>(Result.Good, null, val);
 	}
 
-	///<summary>Tries to parse a parameter with a single value</summary>
+	///<summary>
+	/// Tries to parse a parameter with a single value
+	/// The result Error property may be set if parsing failed
+	///</summary>
 	///<param name="switch">The parameter name</param>
 	///<param name="def">An optional default value used if parsing fails</param>
 	///<param name="par">An optional custom parser to be used on the value</param>
@@ -110,7 +116,7 @@ public sealed class ParseParams
 		}
 
 		Exception err;
-		(val, err) = ParseAndCapture(Args[i+1], par ?? Parse<T>, def);
+		(val, err) = ParseAndCapture(Args[i+1], par ?? ParserInst.Parse<T>, def);
 
 		if (err != null) {
 			return new ParseResult<T>(Result.UnParsable, @switch, val, err);
@@ -121,7 +127,11 @@ public sealed class ParseParams
 		return new ParseResult<T>(Result.Good, @switch, val);
 	}
 
-	///<summary>Tries to parse a multi-named parameter with a single value</summary>
+	///<summary>
+	/// Tries to parse a multi-named parameter with a single value
+	/// The result Error property may be set if parsing failed
+	/// The result Name may be null if multiple parameter names were given
+	///</summary>
 	///<param name="switch">The parameter name(s)</param>
 	///<param name="val">The output value</param>
 	///<param name="def">An optional default value used if parsing fails</param>
@@ -137,14 +147,17 @@ public sealed class ParseParams
 				r.Result == Result.UnParsable ||
 				r.Result == Result.Good
 			) {
-				return new ParseResult<T>(r.Result, sw, r.Value);
+				return new ParseResult<T>(r.Result, sw, r.Value, r.Error);
 			}
 		}
 		string name = @switch.Length == 1 ? @switch[0] : null;
 		return new ParseResult<T>(Result.Missing, name, default);
 	}
 
-	///<summary>Tries to parse a parameter with two values</summary>
+	///<summary>
+	/// Tries to parse a parameter with two values
+	/// The result Error property may be set if parsing failed
+	///</summary>
 	///<param name="switch">The parameter name</param>
 	///<param name="leftVal">The first output value</param>
 	///<param name="rightVal">The second output value</param>
@@ -171,7 +184,7 @@ public sealed class ParseParams
 		}
 
 		Exception leftErr;
-		(leftVal, leftErr) = ParseAndCapture(Args[i+1], leftPar ?? Parse<T>, leftDef);
+		(leftVal, leftErr) = ParseAndCapture(Args[i+1], leftPar ?? ParserInst.Parse<T>, leftDef);
 
 		if (leftErr != null) {
 			return new ParseResult<(T,U)>(Result.UnParsable, @switch, (leftVal,rightVal), leftErr);
@@ -189,7 +202,7 @@ public sealed class ParseParams
 		}
 
 		Exception rightErr;
-		(rightVal, rightErr) = ParseAndCapture(Args[i+2], rightPar ?? Parse<U>, rightDef);
+		(rightVal, rightErr) = ParseAndCapture(Args[i+2], rightPar ?? ParserInst.Parse<U>, rightDef);
 
 		if (rightErr != null) {
 			return new ParseResult<(T,U)>(Result.UnParsable, @switch, (leftVal,rightVal), rightErr);
@@ -201,7 +214,11 @@ public sealed class ParseParams
 		return new ParseResult<(T,U)>(Result.Good, @switch, (leftVal,rightVal));
 	}
 
-	///<summary>Tries to parse a parameter with two values</summary>
+	///<summary>
+	/// Tries to parse a parameter with two values
+	/// The result Error property may be set if parsing failed
+	/// The result Name may be null if multiple parameter names were given
+	///</summary>
 	///<param name="switch">The parameter name(s)</param>
 	///<param name="leftVal">The first output value</param>
 	///<param name="rightVal">The second output value</param>
@@ -224,30 +241,33 @@ public sealed class ParseParams
 				r.Result == Result.UnParsable ||
 				r.Result == Result.Good
 			) {
-				return new ParseResult<(T,U)>(r.Result, sw, r.Value);
+				return new ParseResult<(T,U)>(r.Result, sw, r.Value, r.Error);
 			}
 		}
 		string name = @switch.Length == 1 ? @switch[0] : null;
 		return new ParseResult<(T,U)>(Result.Missing, name, (default,default));
 	}
 
-	///<summary>Expects to parse a value without an accompanying parameter</summary>
-	///<param name="val">The output value</param>
-	///<param name="def">An optional default value used if parsing fails</param>
+	///<summary>
+	/// Expects to parse a value without an accompanying parameter
+	/// The result Error property may be set if parsing failed
+	///</summary>
 	///<param name="par">An optional custom parser to be used on the value</param>
 	///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<T> ExpectValue<T>()
+	public ParseResult<T> ExpectValue<T>(Parser<T> par = null)
 	{
-		var r = DefaultValue<T>();
+		var r = DefaultValue<T>(par: par);
 		//turn Missing into MissingArgument
 		if (r.Result == Result.Missing) {
-			return new ParseResult<T>(Result.MissingArgument, r.Name, r.Value);
+			return new ParseResult<T>(Result.MissingArgument, r.Name, r.Value, r.Error);
 		}
 		return r;
 	}
 
-	///<summary>Expects to find the given parameter with no value</summary>
+	///<summary>
+	/// Expects to find the given parameter with no value
+	///</summary>
 	///<param name="switch">The name of the parameter</param>
 	///<returns><c>ParseResult</c> value</returns>
 	public ParseResult<bool> Expect(string @switch)
@@ -255,12 +275,15 @@ public sealed class ParseParams
 		var has = Has(@switch);
 		//turn Missing into MissingArgument
 		if (has.Result == Result.Missing) {
-			return new ParseResult<bool>(Result.MissingArgument, has.Name, has.Value);
+			return new ParseResult<bool>(Result.MissingArgument, has.Name, has.Value, has.Error);
 		}
 		return has;
 	}
 
-	///<summary>Expects to parse a parameter with a single value</summary>
+	///<summary>
+	/// Expects to parse a parameter with a single value
+	/// The result Error property may be set if parsing failed
+	///</summary>
 	///<param name="switch">The name fo the parameter</param>
 	///<param name="val">The output value</param>
 	///<param name="par">An optional custom parser to be used on the value</param>
@@ -271,12 +294,15 @@ public sealed class ParseParams
 		var r = Default(@switch, par:par);
 		//turn Missing into MissingArgument
 		if (r.Result == Result.Missing) {
-			return new ParseResult<T>(Result.MissingArgument, r.Name, r.Value);
+			return new ParseResult<T>(Result.MissingArgument, r.Name, r.Value, r.Error);
 		}
 		return r;
 	}
 
-	///<summary>Expects to parse a parameter with two values</summary>
+	///<summary>
+	/// Expects to parse a parameter with two values
+	/// The result Error property may be set if parsing failed
+	///</summary>
 	///<param name="switch">The name of the parameter</param>
 	///<param name="leftVal">The first output value</param>
 	///<param name="rightVal">The second output value</param>
@@ -291,20 +317,13 @@ public sealed class ParseParams
 		var r = Default(@switch, leftPar:leftPar, rightPar:rightPar);
 		//turn Missing into MissingArgument
 		if (r.Result == Result.Missing) {
-			return new ParseResult<(T,U)>(Result.MissingArgument, r.Name, r.Value);
+			return new ParseResult<(T,U)>(Result.MissingArgument, r.Name, r.Value, r.Error);
 		}
 		return r;
 	}
 
-
 	//private parser instance
 	readonly IParamsParser ParserInst;
-
-	//wrapper for calling the IParamsParser so we can use it as a delegate
-	T Parse<T>(string inp)
-	{
-		return ParserInst.Parse<T>(inp);
-	}
 
 	//helper for running the parser and capturing any errors
 	static (T,Exception) ParseAndCapture<T>(string sub, Parser<T> par, T def = default)

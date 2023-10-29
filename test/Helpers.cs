@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Rasberry.Cli.Tests;
@@ -25,3 +26,107 @@ public static class Extensions
 		}
 	}
 }
+
+#if DEBUG
+// This is here to help with the examples in readme.md
+class Example
+{
+	bool ParseInputs(string[] args)
+	{
+		var p = new ParseParams(args);
+
+		if (p.Has("-a").IsGood()) {
+			HasOptionA = true;
+		}
+
+		//example using temporary variable
+		var rb = p.Default<double>("-b");
+		if (rb.IsBad()) {
+			string err = rb.Error == null ? "" : " - " + rb.Error.ToString();
+			Console.WriteLine($"something is wrong with your {rb.Name} option{err}");
+			return false;
+		}
+		OptionB = rb.Value;
+
+		//example using 'When' extensions
+		if (p.Expect<double>("-c")
+			.WhenGood(r => { OptionC = r.Value; })
+			.WhenMissingArgument(r => { Console.WriteLine($"option {r.Name} is missing"); })
+			.WhenUnParsable(r => { Console.WriteLine($"could not parse {r.Name} option - {r.Error}"); })
+			.IsBad()
+		) {
+			return false;
+		}
+
+		return true;
+	}
+
+	bool HasOptionA;
+	double OptionB;
+	double OptionC;
+
+	bool ParseExtras(string[] args)
+	{
+		var p = new ParseParams(args);
+
+		{
+		double OptionD;
+		var parser = new ParseParams.Parser<double>((string s) => {
+			return ExtraParsers.ParseNumberPercent(s);
+		});
+
+		if (p.Default("-d", par: parser)
+			.WhenGood(r => { OptionD = r.Value; })
+			.WhenBad(r => {
+				string err = r.Error == null ? "" : " - " + r.Error.ToString();
+				Console.WriteLine($"something is wrong with your {r.Name} option{err}");
+			})
+			.IsBad()
+		) {
+			return false;
+		}
+		}
+
+		{
+		System.Drawing.Color MyColor;
+		var parser = new ParseParams.Parser<System.Drawing.Color>(ExtraParsers.ParseColor);
+		if (p.Default("-c", par: parser)
+			.WhenGood(r => { MyColor = r.Value; })
+			.IsBad()
+		) {
+			return false;
+		}
+		}
+
+		{
+		FoodStuff Food;
+		var parser = new ParseParams.Parser<FoodStuff>((string s) => {
+			return ExtraParsers.ParseEnumFirstLetter<FoodStuff>(s, ignoreZero: true);
+		});
+		if (p.Default("-c", par: parser)
+			.WhenGood(r => { Food = r.Value; })
+			.IsBad()
+		) {
+			return false;
+		}
+		}
+
+		{
+		IReadOnlyList<int> Seq;
+		var parser = new ParseParams.Parser<IReadOnlyList<int>>((string s) => {
+			return ExtraParsers.ParseSequence<int>(s,new char[] {','});
+		});
+
+		if (p.Default("-s", par: parser)
+			.WhenGood(r => { Seq = r.Value; })
+			.IsBad()
+		) {
+			return false;
+		}
+
+		}
+
+		return true;
+	}
+}
+#endif

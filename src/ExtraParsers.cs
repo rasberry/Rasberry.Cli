@@ -68,12 +68,17 @@ public static class ExtraParsers
 	///<summary>Attempts to parse a sequence of values (for example a set of space seperated numbers)</summary>
 	///<param name="arg">The input string</param>
 	///<param name="delimiters">A set of delimiters</param>
-	///<param name="parser">The parser to use on each piece of the input</param>
+	///<param name="parser">The optional parser to use on each piece of the input</param>
 	///<returns>the output list of values</returns>
-	public static IReadOnlyList<T> ParseSequence<T>(string arg, char[] delimiters, ParseParams.Parser<T> parser)
+	public static IReadOnlyList<T> ParseSequence<T>(string arg, char[] delimiters, ParseParams.Parser<T> parser = null)
 	{
 		if (string.IsNullOrWhiteSpace(arg)) {
 			throw new ArgumentException(nameof(arg));
+		}
+
+		if (parser == null) {
+			var dp = new DefaultParser();
+			parser = dp.Parse<T>;
 		}
 
 		var parts = arg.Split(delimiters,StringSplitOptions.RemoveEmptyEntries);

@@ -103,6 +103,7 @@ public class TestParseParamsExpect
 		Assert.IsTrue(r.IsMissingArgument());
 		Assert.AreEqual("-q",r.Name);
 		Assert.AreEqual(default,r.Value);
+		Assert.AreEqual(null, r.Error);
 	}
 
 	[TestMethod]
@@ -116,6 +117,7 @@ public class TestParseParamsExpect
 		Assert.AreEqual(2.0,r.Value.Item1);
 		Assert.AreEqual(1.0,r.Value.Item2);
 		Assert.AreEqual("-x",r.Name);
+		Assert.AreEqual(null, r.Error);
 	}
 
 	[TestMethod]
@@ -129,5 +131,6 @@ public class TestParseParamsExpect
 		Assert.IsTrue(r.IsMissingArgument());
 		Assert.AreEqual("-x",r.Name);
 		Assert.AreEqual((2.0,default),r.Value);
+		Assert.AreEqual(null, r.Error);
 	}
 }
