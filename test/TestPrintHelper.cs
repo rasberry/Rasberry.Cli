@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Rasberry.Cli.Tests;
 
 [TestClass]
-public class PrintHelperTest
+public class TestPrintHelper
 {
 	[TestInitialize]
 	public void Init()

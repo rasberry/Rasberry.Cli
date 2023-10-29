@@ -6,16 +6,15 @@ using System.Collections.Generic;
 namespace Rasberry.Cli.Tests;
 
 [TestClass]
-public class DefaultParserTest
+public class TestDefaultParser
 {
 	static readonly DefaultParser parser = new();
 
-	[DataTestMethod]
+	[TestMethod]
 	[DynamicData(nameof(GetSuccessData), DynamicDataSourceType.Method)]
 	public void ParseSuccess(Type dest, string raw, object expected)
 	{
-		bool w = parser.TryParse(dest,raw,out object parsed);
-		Assert.IsTrue(w);
+		object parsed = parser.Parse(dest,raw);
 		Assert.AreEqual(expected,parsed);
 	}
 
@@ -107,88 +106,90 @@ public class DefaultParserTest
 		yield return new object[] { typeof(float?), "1.0", 1.0f };
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DynamicData(nameof(GetFailData), DynamicDataSourceType.Method)]
-	public void ParseFail(Type dest, string raw)
+	public void ParseFail(Type dest, string raw, Type err)
 	{
-		bool w = parser.TryParse(dest,raw,out object _);
-		Assert.IsFalse(w);
+		Assert.That.ThrowsExceptionType(err, () => {
+			object parsed = parser.Parse(dest,raw);
+		});
 	}
 
 	static IEnumerable<object[]> GetFailData()
 	{
-		yield return new object[] { typeof(bool),"bad" };
-		yield return new object[] { typeof(bool),"" };
-		yield return new object[] { typeof(bool),null };
-		yield return new object[] { typeof(bool)," " };
+		yield return new object[] { typeof(bool), "bad", typeof(FormatException)};
+		yield return new object[] { typeof(bool), "", typeof(FormatException)};
+		yield return new object[] { typeof(bool), null, typeof(ArgumentNullException)};
+		yield return new object[] { typeof(bool), " ", typeof(FormatException)};
+		yield return new object[] { typeof(bool), "0", typeof(FormatException)};
+		yield return new object[] { typeof(bool), "1", typeof(FormatException)};
 
-		yield return new object[] { typeof(byte),"-32" };
-		yield return new object[] { typeof(byte),"256" };
-		yield return new object[] { typeof(byte),"" };
-		yield return new object[] { typeof(byte),null };
+		yield return new object[] { typeof(byte), "-32", typeof(OverflowException)};
+		yield return new object[] { typeof(byte), "256", typeof(OverflowException)};
+		yield return new object[] { typeof(byte), "", typeof(FormatException)};
+		yield return new object[] { typeof(byte), null, typeof(ArgumentNullException)};
 
-		yield return new object[] { typeof(sbyte),"-129" };
-		yield return new object[] { typeof(sbyte),"128" };
-		yield return new object[] { typeof(sbyte),"-0x0A" };
-		yield return new object[] { typeof(sbyte),"" };
-		yield return new object[] { typeof(sbyte),null };
+		yield return new object[] { typeof(sbyte), "-129", typeof(OverflowException)};
+		yield return new object[] { typeof(sbyte), "128", typeof(OverflowException)};
+		yield return new object[] { typeof(sbyte), "-0x0A", typeof(FormatException)};
+		yield return new object[] { typeof(sbyte), "", typeof(FormatException)};
+		yield return new object[] { typeof(sbyte), null, typeof(ArgumentNullException)};
 
-		yield return new object[] { typeof(char),"aa" };
-		yield return new object[] { typeof(char),"97" };
-		yield return new object[] { typeof(char),"" };
-		yield return new object[] { typeof(char),null };
+		yield return new object[] { typeof(char), "aa", typeof(FormatException)};
+		yield return new object[] { typeof(char), "97", typeof(FormatException)};
+		yield return new object[] { typeof(char), "", typeof(FormatException)};
+		yield return new object[] { typeof(char), null, typeof(ArgumentNullException)};
 
-		yield return new object[] { typeof(double),"NaN" };
-		yield return new object[] { typeof(double),"0xA.1f" };
-		yield return new object[] { typeof(float),"NaN" };
+		yield return new object[] { typeof(double), "NaN", typeof(ArgumentException)};
+		yield return new object[] { typeof(double), "0xA.1f", typeof(ArgumentException)};
+		yield return new object[] { typeof(float) , "NaN", typeof(ArgumentException)};
 
-		yield return new object[] { typeof(ushort),"-10" };
-		yield return new object[] { typeof(uint),"-10" };
-		yield return new object[] { typeof(ulong),"-10" };
+		yield return new object[] { typeof(ushort), "-10", typeof(OverflowException)};
+		yield return new object[] { typeof(uint), "-10", typeof(OverflowException)};
+		yield return new object[] { typeof(ulong), "-10", typeof(OverflowException)};
 
-		yield return new object[] { typeof(int),"0x0Q" };
-		yield return new object[] { typeof(int),"0b012" };
+		yield return new object[] { typeof(int), "0x0Q", typeof(FormatException) };
+		yield return new object[] { typeof(int), "0b012",typeof(FormatException) };
 	}
 
-	[DataTestMethod]
+	[TestMethod]
 	[DataRow("bread",FoodStuff.Bread)]
 	[DataRow("Bread",FoodStuff.Bread)]
 	[DataRow("0",FoodStuff.Donut)]
 	[DataRow("3",FoodStuff.Fish)]
 	public void ParseEnumSuccess(string raw, FoodStuff value)
 	{
-		bool w = parser.TryParse(raw,out FoodStuff food);
-		Assert.IsTrue(w);
+		FoodStuff food = parser.Parse<FoodStuff>(raw);
 		Assert.AreEqual(value,food);
 	}
 
-	[DataTestMethod]
-	[DataRow("b")]
-	[DataRow("-1")]
-	[DataRow("999")]
-	public void ParseEnumFail(string raw)
+	[TestMethod]
+	[DataRow("b",   typeof(ArgumentException))]
+	[DataRow("-1",  typeof(ArgumentException))]
+	[DataRow("999", typeof(ArgumentException))]
+	public void ParseEnumFail(string raw, Type err)
 	{
-		bool w = parser.TryParse(raw,out FoodStuff _);
-		Assert.IsFalse(w);
+		Assert.That.ThrowsExceptionType(err, () => {
+			FoodStuff food = parser.Parse<FoodStuff>(raw);
+		});
 	}
 
 	[TestMethod]
 	public void ParseStringSuccess()
 	{
-		bool w = parser.TryParse("test",out string val);
-		Assert.IsTrue(w);
+		string val = parser.Parse<string>("test");
 		Assert.AreEqual("test",val);
 	}
 
-	[DataTestMethod]
-	[DataRow("")]
-	[DataRow(null)]
-	[DataRow(" ")]
-	public void ParseStringFail(string raw)
+	[TestMethod]
+	[DataRow("",   typeof(ArgumentException))]
+	[DataRow(null, typeof(ArgumentException))]
+	[DataRow(" ",  typeof(ArgumentException))]
+	public void ParseStringFail(string raw, Type err)
 	{
 		//parsing should fail
-		bool w = parser.TryParse(raw,out string val);
-		Assert.IsFalse(w);
-		Assert.AreEqual(null,val);
+		Assert.That.ThrowsExceptionType(err, () => {
+			string val = parser.Parse<string>(raw);
+		});
 	}
 }
