@@ -42,55 +42,55 @@ public static class ResultExtensions
 	}
 
 	///<summary>Runs given function if result <c>IsGood</c></summary>
-	public static ParseResult<T> WhenGood<T>(this ParseResult<T> r, Action<ParseResult<T>> action = null)
+	public static ParseResult<T> WhenGood<T>(this ParseResult<T> r, Func<ParseResult<T>,ParseResult<T>> action = null)
 	{
 		if (action != null && r.IsGood()) {
-			action(r);
+			return action(r);
 		}
 		return r;
 	}
 
 	///<summary>Runs given function if result <c>IsBad</c></summary>
-	public static ParseResult<T> WhenBad<T>(this ParseResult<T> r, Action<ParseResult<T>> action = null)
+	public static ParseResult<T> WhenBad<T>(this ParseResult<T> r, Func<ParseResult<T>,ParseResult<T>> action = null)
 	{
 		if (action != null && r.IsBad()) {
-			action(r);
+			return action(r);
 		}
 		return r;
 	}
 
 	///<summary>Runs given function if result <c>IsMissingArgument</c></summary>
-	public static ParseResult<T> WhenMissingArgument<T>(this ParseResult<T> r, Action<ParseResult<T>> action = null)
+	public static ParseResult<T> WhenMissingArgument<T>(this ParseResult<T> r, Func<ParseResult<T>,ParseResult<T>> action = null)
 	{
 		if (action != null && r.IsMissingArgument()) {
-			action(r);
+			return action(r);
 		}
 		return r;
 	}
 
 	///<summary>Runs given function if result <c>IsUnParsable</c></summary>
-	public static ParseResult<T> WhenUnParsable<T>(this ParseResult<T> r, Action<ParseResult<T>> action = null)
+	public static ParseResult<T> WhenUnParsable<T>(this ParseResult<T> r, Func<ParseResult<T>,ParseResult<T>> action = null)
 	{
 		if (action != null && r.IsUnParsable()) {
-			action(r);
+			return action(r);
 		}
 		return r;
 	}
 
 	///<summary>Runs given function if result <c>IsMissing</c></summary>
-	public static ParseResult<T> WhenMissing<T>(this ParseResult<T> r, Action<ParseResult<T>> action = null)
+	public static ParseResult<T> WhenMissing<T>(this ParseResult<T> r, Func<ParseResult<T>,ParseResult<T>> action = null)
 	{
 		if (action != null && r.IsMissing()) {
-			action(r);
+			return action(r);
 		}
 		return r;
 	}
 
 	///<summary>Runs given function if result <c>IsInvalid</c></summary>
-	public static ParseResult<T> WhenInvalid<T>(this ParseResult<T> r, Action<ParseResult<T>> action = null)
+	public static ParseResult<T> WhenInvalid<T>(this ParseResult<T> r, Func<ParseResult<T>,ParseResult<T>> action = null)
 	{
 		if (action != null && r.IsInvalid()) {
-			action(r);
+			return action(r);
 		}
 		return r;
 	}

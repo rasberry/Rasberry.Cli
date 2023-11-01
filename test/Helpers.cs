@@ -50,9 +50,9 @@ class Example
 
 		//example using 'When' extensions
 		if (p.Expect<double>("-c")
-			.WhenGood(r => { OptionC = r.Value; })
-			.WhenMissingArgument(r => { Console.WriteLine($"option {r.Name} is missing"); })
-			.WhenUnParsable(r => { Console.WriteLine($"could not parse {r.Name} option - {r.Error}"); })
+			.WhenGood(r => { OptionC = r.Value; return r; })
+			.WhenMissingArgument(r => { Console.WriteLine($"option {r.Name} is missing"); return r;})
+			.WhenUnParsable(r => { Console.WriteLine($"could not parse {r.Name} option - {r.Error}"); return r; })
 			.IsBad()
 		) {
 			return false;
@@ -76,10 +76,11 @@ class Example
 		});
 
 		if (p.Default("-d", par: parser)
-			.WhenGood(r => { OptionD = r.Value; })
+			.WhenGood(r => { OptionD = r.Value; return r;})
 			.WhenBad(r => {
 				string err = r.Error == null ? "" : " - " + r.Error.ToString();
 				Console.WriteLine($"something is wrong with your {r.Name} option{err}");
+				return r;
 			})
 			.IsBad()
 		) {
@@ -91,7 +92,7 @@ class Example
 		System.Drawing.Color MyColor;
 		var parser = new ParseParams.Parser<System.Drawing.Color>(ExtraParsers.ParseColor);
 		if (p.Default("-c", par: parser)
-			.WhenGood(r => { MyColor = r.Value; })
+			.WhenGood(r => { MyColor = r.Value; return r; })
 			.IsBad()
 		) {
 			return false;
@@ -104,7 +105,7 @@ class Example
 			return ExtraParsers.ParseEnumFirstLetter<FoodStuff>(s, ignoreZero: true);
 		});
 		if (p.Default("-c", par: parser)
-			.WhenGood(r => { Food = r.Value; })
+			.WhenGood(r => { Food = r.Value; return r;})
 			.IsBad()
 		) {
 			return false;
@@ -118,7 +119,7 @@ class Example
 		});
 
 		if (p.Default("-s", par: parser)
-			.WhenGood(r => { Seq = r.Value; })
+			.WhenGood(r => { Seq = r.Value; return r; })
 			.IsBad()
 		) {
 			return false;

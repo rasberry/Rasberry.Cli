@@ -17,14 +17,14 @@ public readonly struct ParseResult<T>
 	}
 
 	/// <summary>Result of the Operation</summary>
-	public ParseParams.Result Result { get; }
+	public ParseParams.Result Result { get; init; }
 
 	/// <summary>Name of the parameter - may be null if multiple names are provided</summary>
-	public string Name { get; }
+	public string Name { get; init; }
 
 	/// <summary>Value of the parameter - may be default if operation failed</summary>
-	public T Value { get; }
+	public T Value { get; init; }
 
 	/// <summary>Captures any errors thrown by the parser</summary>
-	public Exception Error { get; }
+	public Exception Error { get; init; }
 }

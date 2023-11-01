@@ -20,12 +20,12 @@ public class TestExtensions
 		bool isMissingArgument = false;
 
 		var check = p.Default<double>("-x")
-			.WhenBad((n) => {isBad = true;})
-			.WhenGood((n) => {isGood = true;})
-			.WhenMissing((n) => {isMissing = true; })
-			.WhenInvalid((n) => {isInvalid = true; })
-			.WhenUnParsable((n) => {isUnParsable = true; })
-			.WhenMissingArgument((n) => {isMissingArgument = true; })
+			.WhenBad(n => {isBad = true; return n;})
+			.WhenGood(n => {isGood = true; return n;})
+			.WhenMissing(n => {isMissing = true; return n;})
+			.WhenInvalid(n => {isInvalid = true; return n;})
+			.WhenUnParsable(n => {isUnParsable = true; return n;})
+			.WhenMissingArgument(n => {isMissingArgument = true; return n;})
 			.IsBad();
 
 		Assert.IsFalse(check);
@@ -51,12 +51,12 @@ public class TestExtensions
 		bool isMissingArgument = false;
 
 		var check = p.Default<double>("-x")
-			.WhenBad((n) => {isBad = true;})
-			.WhenGood((n) => {isGood = true;})
-			.WhenMissing((n) => {isMissing = true; })
-			.WhenInvalid((n) => {isInvalid = true; })
-			.WhenUnParsable((n) => {isUnParsable = true; })
-			.WhenMissingArgument((n) => {isMissingArgument = true; })
+			.WhenBad(n => {isBad = true; return n;})
+			.WhenGood(n => {isGood = true; return n;})
+			.WhenMissing(n => {isMissing = true; return n;})
+			.WhenInvalid(n => {isInvalid = true; return n;})
+			.WhenUnParsable(n => {isUnParsable = true; return n;})
+			.WhenMissingArgument(n => {isMissingArgument = true; return n;})
 			.IsBad();
 
 		Assert.IsTrue(check);
@@ -82,12 +82,12 @@ public class TestExtensions
 		bool isMissingArgument = false;
 
 		var check = p.Default<double>("-q")
-			.WhenBad((n) => {isBad = true;})
-			.WhenGood((n) => {isGood = true;})
-			.WhenMissing((n) => {isMissing = true; })
-			.WhenInvalid((n) => {isInvalid = true; })
-			.WhenUnParsable((n) => {isUnParsable = true; })
-			.WhenMissingArgument((n) => {isMissingArgument = true; })
+			.WhenBad(n => {isBad = true; return n;})
+			.WhenGood(n => {isGood = true; return n;})
+			.WhenMissing(n => {isMissing = true; return n;})
+			.WhenInvalid(n => {isInvalid = true; return n;})
+			.WhenUnParsable(n => {isUnParsable = true; return n;})
+			.WhenMissingArgument(n => {isMissingArgument = true; return n;})
 			.IsBad();
 
 		Assert.IsTrue(check);
@@ -113,12 +113,12 @@ public class TestExtensions
 		bool isMissingArgument = false;
 
 		var check = p.Default<double,double>("-x")
-			.WhenBad((n) => {isBad = true;})
-			.WhenGood((n) => {isGood = true;})
-			.WhenMissing((n) => {isMissing = true; })
-			.WhenInvalid((n) => {isInvalid = true; })
-			.WhenUnParsable((n) => {isUnParsable = true; })
-			.WhenMissingArgument((n) => {isMissingArgument = true; })
+			.WhenBad(n => {isBad = true; return n;})
+			.WhenGood(n => {isGood = true; return n;})
+			.WhenMissing(n => {isMissing = true; return n;})
+			.WhenInvalid(n => {isInvalid = true; return n;})
+			.WhenUnParsable(n => {isUnParsable = true; return n;})
+			.WhenMissingArgument(n => {isMissingArgument = true; return n;})
 			.IsBad();
 
 		Assert.IsTrue(check);
@@ -144,12 +144,12 @@ public class TestExtensions
 		bool isMissingArgument = false;
 
 		var check = p.Expect<double>("-z")
-			.WhenBad((n) => {isBad = true;})
-			.WhenGood((n) => {isGood = true;})
-			.WhenMissing((n) => {isMissing = true; })
-			.WhenInvalid((n) => {isInvalid = true; })
-			.WhenUnParsable((n) => {isUnParsable = true; })
-			.WhenMissingArgument((n) => {isMissingArgument = true; })
+			.WhenBad(n => {isBad = true; return n;})
+			.WhenGood(n => {isGood = true; return n;})
+			.WhenMissing(n => {isMissing = true; return n;})
+			.WhenInvalid(n => {isInvalid = true; return n;})
+			.WhenUnParsable(n => {isUnParsable = true; return n;})
+			.WhenMissingArgument(n => {isMissingArgument = true; return n;})
 			.IsBad();
 
 		Assert.IsTrue(check);
@@ -159,5 +159,40 @@ public class TestExtensions
 		Assert.IsTrue(isInvalid);
 		Assert.IsFalse(isUnParsable);
 		Assert.IsTrue(isMissingArgument);
+	}
+
+	[TestMethod]
+	public void TestWhenChangeResult()
+	{
+		string[] args = new[] { "-x", "2"};
+		var p = new ParseParams(args);
+
+		bool isBad = false;
+		bool isGood = false;
+		bool isMissing = false;
+		bool isInvalid = false;
+		bool isUnParsable = false;
+		bool isMissingArgument = false;
+
+		var check = p.Expect<double>("-z")
+			.WhenBad(n => {
+				isBad = true; return n with { Result = ParseParams.Result.Good };
+			})
+			.WhenGood(n => {
+				isGood = true; return n with { Result = ParseParams.Result.UnParsable };
+			})
+			.WhenMissing(n => {isMissing = true; return n;})
+			.WhenInvalid(n => {isInvalid = true; return n;})
+			.WhenUnParsable(n => {isUnParsable = true; return n;})
+			.WhenMissingArgument(n => { isMissingArgument = true; return n;})
+			.IsBad();
+
+		Assert.IsTrue(check); //the second update is back to bad
+		Assert.IsTrue(isBad); //this was set before the first update
+		Assert.IsTrue(isGood); //this was set because the result was Good at that point
+		Assert.IsFalse(isMissing);
+		Assert.IsTrue(isInvalid);
+		Assert.IsTrue(isUnParsable);
+		Assert.IsFalse(isMissingArgument);
 	}
 }
