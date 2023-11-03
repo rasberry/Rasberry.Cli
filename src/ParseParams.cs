@@ -63,7 +63,7 @@ public sealed class ParseParams
 		}
 		return new ParseResult<bool>(
 			result: ii == -1 ? Result.Missing : Result.Good,
-			name: @switch.Length == 1 ? @switch[0] : null,
+			name: name ?? (@switch.Length > 0 ? @switch[0] : null),
 			value: ii != -1
 		);
 	}
@@ -150,7 +150,7 @@ public sealed class ParseParams
 				return new ParseResult<T>(r.Result, sw, r.Value, r.Error);
 			}
 		}
-		string name = @switch.Length == 1 ? @switch[0] : null;
+		string name = @switch.Length > 0 ? @switch[0] : null;
 		return new ParseResult<T>(Result.Missing, name, default);
 	}
 
@@ -244,7 +244,7 @@ public sealed class ParseParams
 				return new ParseResult<(T,U)>(r.Result, sw, r.Value, r.Error);
 			}
 		}
-		string name = @switch.Length == 1 ? @switch[0] : null;
+		string name = @switch.Length > 0 ? @switch[0] : null;
 		return new ParseResult<(T,U)>(Result.Missing, name, (default,default));
 	}
 

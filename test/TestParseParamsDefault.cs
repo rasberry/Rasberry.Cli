@@ -117,7 +117,7 @@ public class TestParseParamsDefault
 		var r = p.Default<double>(new string[] { "-u", "-v" });
 		Assert.IsTrue(r.IsBad());
 		Assert.IsTrue(r.IsMissing());
-		Assert.AreEqual(null,r.Name);
+		Assert.AreEqual("-u",r.Name);
 		Assert.AreEqual(default,r.Value);
 		Assert.AreEqual(null, r.Error);
 	}
