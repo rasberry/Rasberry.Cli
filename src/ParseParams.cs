@@ -29,6 +29,7 @@ public sealed class ParseParams
 	}
 
 	/// <summary>Constructor for Params using a custom parser</summary>
+	///<param name="args">String array of arguments that have already been seperated</param>
 	///<param name="customParser">A custom parser instance</param>
 	public ParseParams(string[] args, IParamsParser customParser)
 	{
@@ -133,7 +134,6 @@ public sealed class ParseParams
 	/// The result Name may be null if multiple parameter names were given
 	///</summary>
 	///<param name="switch">The parameter name(s)</param>
-	///<param name="val">The output value</param>
 	///<param name="def">An optional default value used if parsing fails</param>
 	///<param name="par">An optional custom parser to be used on the value</param>
 	///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
@@ -159,8 +159,6 @@ public sealed class ParseParams
 	/// The result Error property may be set if parsing failed
 	///</summary>
 	///<param name="switch">The parameter name</param>
-	///<param name="leftVal">The first output value</param>
-	///<param name="rightVal">The second output value</param>
 	///<param name="leftDef">An optional default value used if parsing fails</param>
 	///<param name="rightDef">An optional default value used if parsing fails</param>
 	///<param name="condition">A condition function that determines when second argument is required (defaults to always true)</param>
@@ -220,8 +218,6 @@ public sealed class ParseParams
 	/// The result Name may be null if multiple parameter names were given
 	///</summary>
 	///<param name="switch">The parameter name(s)</param>
-	///<param name="leftVal">The first output value</param>
-	///<param name="rightVal">The second output value</param>
 	///<param name="leftDef">An optional default value used if parsing fails</param>
 	///<param name="rightDef">An optional default value used if parsing fails</param>
 	///<param name="condition">A condition function that determines when second argument is required (defaults to always true)</param>

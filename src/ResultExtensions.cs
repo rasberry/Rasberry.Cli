@@ -2,7 +2,7 @@ using System;
 
 namespace Rasberry.Cli;
 
-///<summary>Extensions for using <c>Result</> in boolean statements</summary>
+///<summary>Extensions for using <c>Result</c> in boolean statements</summary>
 public static class ResultExtensions
 {
 	///<summary>Returns true if the <c>Result</c> is Good</summary>
@@ -104,7 +104,7 @@ public static class ResultExtensions
 		return r;
 	}
 
-	///<summary>Runs given action function if the condition function returns true></summary>
+	///<summary>Runs given action function if the condition function returns true</summary>
 	public static ParseResult<T> When<T>(this ParseResult<T> r, Func<ParseResult<T>,bool> condition, Func<ParseResult<T>,ParseResult<T>> action)
 	{
 		if (condition(r)) {

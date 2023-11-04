@@ -12,12 +12,14 @@ namespace Rasberry.Cli;
 /// </summary>
 public class ProgressBar : IDisposable, IProgress<double> {
 
+	/// <summary>Dispose method</summary>
 	public void Dispose() {
 		disposed = true;
 		UpdateText(string.Empty);
 		timer.Dispose();
 	}
 
+	/// <summary>Default Constructor</summary>
 	public ProgressBar() {
 		timer = new Timer(TimerHandler);
 
