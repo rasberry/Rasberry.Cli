@@ -4,21 +4,21 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Rasberry.Cli.Tests;
 
 [TestClass]
-public class TestParseParamsDefault
+public class TestParseParamsScan
 {
 	[TestMethod]
-	public void TestDefaultOne()
+	public void TestScanOne()
 	{
 		string[] args = new[] { "-w", "1", "-x", "hi" };
 		var p = new ParseParams(args);
 
-		var r1 = p.Default<double>("-w");
+		var r1 = p.Scan<double>("-w");
 		Assert.IsTrue(r1.IsGood());
 		Assert.AreEqual(1.0,r1.Value);
 		Assert.AreEqual("-w",r1.Name);
 		Assert.AreEqual(null, r1.Error);
 
-		var r2 = p.Default<string>("-x");
+		var r2 = p.Scan<string>("-x");
 		Assert.IsTrue(r2.IsGood());
 		Assert.AreEqual("hi",r2.Value);
 		Assert.AreEqual("-x",r2.Name);
@@ -29,12 +29,12 @@ public class TestParseParamsDefault
 	}
 
 	[TestMethod]
-	public void TestDefaultOneMissing()
+	public void TestScanOneMissing()
 	{
 		string[] args = new[] { "-w", "1", "-x", "hi" };
 		var p = new ParseParams(args);
 
-		var r = p.Default<double>("-q");
+		var r = p.Scan<double>("-q");
 		Assert.IsTrue(r.IsBad());
 		Assert.IsTrue(r.IsMissing());
 		Assert.AreEqual("-q",r.Name);
@@ -43,12 +43,12 @@ public class TestParseParamsDefault
 	}
 
 	[TestMethod]
-	public void TestDefaultOneUnParsable()
+	public void TestScanOneUnParsable()
 	{
 		string[] args = new[] { "-w", "bad", "-x", "hi" };
 		var p = new ParseParams(args);
 
-		var r = p.Default<double>("-w");
+		var r = p.Scan<double>("-w");
 		Assert.IsTrue(r.IsBad());
 		Assert.IsTrue(r.IsUnParsable());
 		Assert.AreEqual("-w",r.Name);
@@ -57,12 +57,12 @@ public class TestParseParamsDefault
 	}
 
 	[TestMethod]
-	public void TestDefaultOneRemaining()
+	public void TestScanOneRemaining()
 	{
 		string[] args = new[] { "-w", "1", "-x", "hi" };
 		var p = new ParseParams(args);
 
-		var r = p.Default<double>("-w");
+		var r = p.Scan<double>("-w");
 		Assert.IsTrue(r.IsGood());
 		Assert.AreEqual(1.0,r.Value);
 		Assert.AreEqual("-w",r.Name);
@@ -73,12 +73,12 @@ public class TestParseParamsDefault
 	}
 
 	[TestMethod]
-	public void TestDefaultOneMissingArgument()
+	public void TestScanOneMissingArgument()
 	{
 		string[] args = new[] { "-w" };
 		var p = new ParseParams(args);
 
-		var r = p.Default<double>("-w");
+		var r = p.Scan<double>("-w");
 		Assert.IsTrue(r.IsBad());
 		Assert.IsTrue(r.IsMissingArgument());
 		Assert.AreEqual("-w",r.Name);
@@ -87,18 +87,18 @@ public class TestParseParamsDefault
 	}
 
 	[TestMethod]
-	public void TestDefaultMultiOne()
+	public void TestScanMultiOne()
 	{
 		string[] args = new[] { "-w", "1", "-x", "2" };
 		var p = new ParseParams(args);
 
-		var r1 = p.Default<double>(new string[] { "-v", "-w" });
+		var r1 = p.Scan<double>(new string[] { "-v", "-w" });
 		Assert.IsTrue(r1.IsGood());
 		Assert.AreEqual(1.0,r1.Value);
 		Assert.AreEqual("-w",r1.Name);
 		Assert.AreEqual(null, r1.Error);
 
-		var r2 = p.Default<double>(new string[] { "-x", "-y" });
+		var r2 = p.Scan<double>(new string[] { "-x", "-y" });
 		Assert.IsTrue(r2.IsGood());
 		Assert.AreEqual(2.0,r2.Value);
 		Assert.AreEqual("-x",r2.Name);
@@ -109,12 +109,12 @@ public class TestParseParamsDefault
 	}
 
 	[TestMethod]
-	public void TestDefaultMultiOneMissing()
+	public void TestScanMultiOneMissing()
 	{
 		string[] args = new[] { "-w", "1", "-x", "2" };
 		var p = new ParseParams(args);
 
-		var r = p.Default<double>(new string[] { "-u", "-v" });
+		var r = p.Scan<double>(new string[] { "-u", "-v" });
 		Assert.IsTrue(r.IsBad());
 		Assert.IsTrue(r.IsMissing());
 		Assert.AreEqual("-u",r.Name);
@@ -123,12 +123,12 @@ public class TestParseParamsDefault
 	}
 
 	[TestMethod]
-	public void TestDefaultTwo()
+	public void TestScanTwo()
 	{
 		string[] args = new[] { "-w", "1", "hi", "-x" };
 		var p = new ParseParams(args);
 
-		var r = p.Default<double,string>("-w");
+		var r = p.Scan<double,string>("-w");
 		Assert.IsTrue(r.IsGood());
 		Assert.AreEqual(1.0,r.Value.Item1);
 		Assert.AreEqual("hi",r.Value.Item2);
@@ -140,12 +140,12 @@ public class TestParseParamsDefault
 	}
 
 	[TestMethod]
-	public void TestDefaultMultiTwo()
+	public void TestScanMultiTwo()
 	{
 		string[] args = new[] { "-w", "1", "hi", "-x" };
 		var p = new ParseParams(args);
 
-		var r = p.Default<double,string>(new[]{"--wide","-w"});
+		var r = p.Scan<double,string>(new[]{"--wide","-w"});
 		Assert.IsTrue(r.IsGood());
 		Assert.AreEqual(1.0,r.Value.Item1);
 		Assert.AreEqual("hi",r.Value.Item2);
@@ -157,12 +157,12 @@ public class TestParseParamsDefault
 	}
 
 	[TestMethod]
-	public void TestDefaultTwoMissingArgument()
+	public void TestScanTwoMissingArgument()
 	{
 		string[] args = new[] { "-w", "1",};
 		var p = new ParseParams(args);
 
-		var r = p.Default<double,string>("-w");
+		var r = p.Scan<double,string>("-w");
 		Assert.IsTrue(r.IsBad());
 		Assert.IsTrue(r.IsMissingArgument());
 		Assert.AreEqual("-w",r.Name);
@@ -171,12 +171,12 @@ public class TestParseParamsDefault
 	}
 
 	[TestMethod]
-	public void TestDefaultTwoConditionSuccess()
+	public void TestScanTwoConditionSuccess()
 	{
 		string[] args = new[] { "-w", "1"};
 		var p = new ParseParams(args);
 
-		var r = p.Default<double,string>(
+		var r = p.Scan<double,string>(
 			@switch:"-w",
 			condition: (double d) => {
 				return false; //second argument optional
@@ -190,12 +190,12 @@ public class TestParseParamsDefault
 	}
 
 	[TestMethod]
-	public void TestDefaultTwoConditionFail()
+	public void TestScanTwoConditionFail()
 	{
 		string[] args = new[] { "-w", "1",};
 		var p = new ParseParams(args);
 
-		var r = p.Default<double,string>(
+		var r = p.Scan<double,string>(
 			@switch:"-w",
 			condition: (double d) => {
 				return true; //second argument required

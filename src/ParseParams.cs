@@ -76,7 +76,7 @@ public sealed class ParseParams
 	///<param name="par">An optional custom parser to be used on the value</param>
 	///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<T> DefaultValue<T>(T def = default,Parser<T> par = null)
+	public ParseResult<T> Value<T>(T def = default,Parser<T> par = null)
 	{
 		T val = def;
 		if (Args.Count <= 0) {
@@ -104,7 +104,7 @@ public sealed class ParseParams
 	///<param name="par">An optional custom parser to be used on the value</param>
 	///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<T> Default<T>(string @switch,T def = default,Parser<T> par = null)
+	public ParseResult<T> Scan<T>(string @switch,T def = default,Parser<T> par = null)
 	{
 		T val = def;
 		int i = Args.IndexOf(@switch);
@@ -138,10 +138,10 @@ public sealed class ParseParams
 	///<param name="par">An optional custom parser to be used on the value</param>
 	///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<T> Default<T>(string[] @switch,T def = default,Parser<T> par = null)
+	public ParseResult<T> Scan<T>(string[] @switch,T def = default,Parser<T> par = null)
 	{
 		foreach(string sw in @switch) {
-			var r = Default<T>(sw,def,par);
+			var r = Scan<T>(sw,def,par);
 			// Log.Debug($"Default sw={sw} r={r} val={val}");
 			if (r.Result == Result.MissingArgument ||
 				r.Result == Result.UnParsable ||
@@ -169,7 +169,7 @@ public sealed class ParseParams
 	///<typeparam name="T">The output type of the first value attempting to be parsed</typeparam>
 	///<typeparam name="U">The output type of the second value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<(T,U)> Default<T,U>(string @switch,
+	public ParseResult<(T,U)> Scan<T,U>(string @switch,
 		T leftDef = default, U rightDef = default, Func<T,bool> condition = null,
 		Parser<T> leftPar = null, Parser<U> rightPar = null)
 	{
@@ -230,12 +230,12 @@ public sealed class ParseParams
 	///<typeparam name="T">The output type of the first value attempting to be parsed</typeparam>
 	///<typeparam name="U">The output type of the second value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<(T,U)> Default<T,U>(string[] @switch,
+	public ParseResult<(T,U)> Scan<T,U>(string[] @switch,
 		T leftDef = default, U rightDef = default, Func<T,bool> condition = null,
 		Parser<T> leftPar = null, Parser<U> rightPar = null)
 	{
 		foreach(string sw in @switch) {
-			var r = Default<T,U>(sw,leftDef,rightDef,condition,leftPar,rightPar);
+			var r = Scan<T,U>(sw,leftDef,rightDef,condition,leftPar,rightPar);
 			// Log.Debug($"Default sw={sw} r={r} val={val}");
 			if (r.Result == Result.MissingArgument ||
 				r.Result == Result.UnParsable ||

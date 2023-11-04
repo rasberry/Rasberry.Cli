@@ -19,7 +19,7 @@ public class TestExtensions
 		bool isUnParsable = false;
 		bool isMissingArgument = false;
 
-		var check = p.Default<double>("-x")
+		var check = p.Scan<double>("-x")
 			.WhenBad(n => {isBad = true; return n;})
 			.WhenGood(n => {isGood = true; return n;})
 			.WhenMissing(n => {isMissing = true; return n;})
@@ -50,7 +50,7 @@ public class TestExtensions
 		bool isUnParsable = false;
 		bool isMissingArgument = false;
 
-		var check = p.Default<double>("-x")
+		var check = p.Scan<double>("-x")
 			.WhenBad(n => {isBad = true; return n;})
 			.WhenGood(n => {isGood = true; return n;})
 			.WhenMissing(n => {isMissing = true; return n;})
@@ -81,7 +81,7 @@ public class TestExtensions
 		bool isUnParsable = false;
 		bool isMissingArgument = false;
 
-		var check = p.Default<double>("-q")
+		var check = p.Scan<double>("-q")
 			.WhenBad(n => {isBad = true; return n;})
 			.WhenGood(n => {isGood = true; return n;})
 			.WhenMissing(n => {isMissing = true; return n;})
@@ -112,7 +112,7 @@ public class TestExtensions
 		bool isUnParsable = false;
 		bool isMissingArgument = false;
 
-		var check = p.Default<double,double>("-x")
+		var check = p.Scan<double,double>("-x")
 			.WhenBad(n => {isBad = true; return n;})
 			.WhenGood(n => {isGood = true; return n;})
 			.WhenMissing(n => {isMissing = true; return n;})
@@ -143,7 +143,7 @@ public class TestExtensions
 		bool isUnParsable = false;
 		bool isMissingArgument = false;
 
-		var check = p.Default<double>("-z")
+		var check = p.Scan<double>("-z")
 			.WhenBad(n => {isBad = true; return n;})
 			.WhenGood(n => {isGood = true; return n;})
 			.WhenMissing(n => {isMissing = true; return n;})
@@ -174,7 +174,7 @@ public class TestExtensions
 		bool isUnParsable = false;
 		bool isMissingArgument = false;
 
-		var check = p.Default<double>("-z")
+		var check = p.Scan<double>("-z")
 			.WhenBad(n => {
 				isBad = true; return n with { Result = ParseParams.Result.Good };
 			})

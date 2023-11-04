@@ -32,7 +32,7 @@ bool ParseInputs(string[] args)
 	}
 
 	//example using temporary variable
-	var rb = p.Default<double>("-b");
+	var rb = p.Scan<double>("-b");
 	if (rb.IsBad()) { //use IsBad when the parameter is required
 		string err = rb.Error == null ? "" : " - " + rb.Error.ToString();
 		Console.WriteLine($"something is wrong with your {rb.Name} option{err}");
@@ -41,7 +41,7 @@ bool ParseInputs(string[] args)
 	OptionB = rb.Value;
 
 	//example using 'When' extensions
-	if (p.Default<double>("-c")
+	if (p.Scan<double>("-c")
 		.WhenGood(r => { OptionC = r.Value; return r; })
 		.WhenMissing(r => { Console.WriteLine($"option {r.Name} is missing"); return r;})
 		.WhenUnParsable(r => { Console.WriteLine($"could not parse {r.Name} option - {r.Error}"); return r; })
@@ -78,7 +78,7 @@ ParseColor is used to parse color names and hex-style colors. For example red an
 ```csharp
 System.Drawing.Color MyColor;
 var parser = new ParseParams.Parser<System.Drawing.Color>(ExtraParsers.ParseColor);
-if (p.Default("-c", par: parser)
+if (p.Scan("-c", par: parser)
 	.WhenGood(r => { MyColor = r.Value; return r; })
 	.IsInvalid()
 ) {
@@ -94,7 +94,7 @@ FoodStuff Food;
 var parser = new ParseParams.Parser<FoodStuff>((string s) => {
 	return ExtraParsers.ParseEnumFirstLetter<FoodStuff>(s, ignoreZero: true);
 });
-if (p.Default("-c", par: parser)
+if (p.Scan("-c", par: parser)
 	.WhenGood(r => { Food = r.Value; return r;})
 	.IsInvalid()
 ) {
@@ -110,7 +110,7 @@ var parser = new ParseParams.Parser<double>((string s) => {
 	return ExtraParsers.ParseNumberPercent(s);
 });
 
-if (p.Default("-d", par: parser)
+if (p.Scan("-d", par: parser)
 	.WhenGood(r => { OptionD = r.Value; return r;})
 	.WhenBad(r => {
 		string err = r.Error == null ? "" : " - " + r.Error.ToString();
@@ -131,7 +131,7 @@ var parser = new ParseParams.Parser<IReadOnlyList<int>>((string s) => {
 	return ExtraParsers.ParseSequence<int>(s,new char[] {','});
 });
 
-if (p.Default("-s", par: parser)
+if (p.Scan("-s", par: parser)
 	.WhenGood(r => { Seq = r.Value; return r; })
 	.IsInvalid()
 ) {
