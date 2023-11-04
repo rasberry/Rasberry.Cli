@@ -143,7 +143,7 @@ public class TestExtensions
 		bool isUnParsable = false;
 		bool isMissingArgument = false;
 
-		var check = p.Expect<double>("-z")
+		var check = p.Default<double>("-z")
 			.WhenBad(n => {isBad = true; return n;})
 			.WhenGood(n => {isGood = true; return n;})
 			.WhenMissing(n => {isMissing = true; return n;})
@@ -155,10 +155,10 @@ public class TestExtensions
 		Assert.IsTrue(check);
 		Assert.IsTrue(isBad);
 		Assert.IsFalse(isGood);
-		Assert.IsFalse(isMissing);
-		Assert.IsTrue(isInvalid);
+		Assert.IsTrue(isMissing);
+		Assert.IsFalse(isInvalid);
 		Assert.IsFalse(isUnParsable);
-		Assert.IsTrue(isMissingArgument);
+		Assert.IsFalse(isMissingArgument);
 	}
 
 	[TestMethod]
@@ -174,7 +174,7 @@ public class TestExtensions
 		bool isUnParsable = false;
 		bool isMissingArgument = false;
 
-		var check = p.Expect<double>("-z")
+		var check = p.Default<double>("-z")
 			.WhenBad(n => {
 				isBad = true; return n with { Result = ParseParams.Result.Good };
 			})

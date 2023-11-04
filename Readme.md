@@ -33,7 +33,7 @@ bool ParseInputs(string[] args)
 
 	//example using temporary variable
 	var rb = p.Default<double>("-b");
-	if (rb.IsBad()) {
+	if (rb.IsBad()) { //use IsBad when the parameter is required
 		string err = rb.Error == null ? "" : " - " + rb.Error.ToString();
 		Console.WriteLine($"something is wrong with your {rb.Name} option{err}");
 		return false;
@@ -41,11 +41,11 @@ bool ParseInputs(string[] args)
 	OptionB = rb.Value;
 
 	//example using 'When' extensions
-	if (p.Expect<double>("-c")
+	if (p.Default<double>("-c")
 		.WhenGood(r => { OptionC = r.Value; return r; })
-		.WhenMissingArgument(r => { Console.WriteLine($"option {r.Name} is missing"); return r;})
+		.WhenMissing(r => { Console.WriteLine($"option {r.Name} is missing"); return r;})
 		.WhenUnParsable(r => { Console.WriteLine($"could not parse {r.Name} option - {r.Error}"); return r; })
-		.IsBad()
+		.IsInvalid() //use IsInvalid when the parameter is optional
 	) {
 		return false;
 	}
@@ -80,7 +80,7 @@ System.Drawing.Color MyColor;
 var parser = new ParseParams.Parser<System.Drawing.Color>(ExtraParsers.ParseColor);
 if (p.Default("-c", par: parser)
 	.WhenGood(r => { MyColor = r.Value; return r; })
-	.IsBad()
+	.IsInvalid()
 ) {
 	return false;
 }
@@ -96,7 +96,7 @@ var parser = new ParseParams.Parser<FoodStuff>((string s) => {
 });
 if (p.Default("-c", par: parser)
 	.WhenGood(r => { Food = r.Value; return r;})
-	.IsBad()
+	.IsInvalid()
 ) {
 	return false;
 }
@@ -117,7 +117,7 @@ if (p.Default("-d", par: parser)
 		Console.WriteLine($"something is wrong with your {r.Name} option{err}");
 		return r;
 	})
-	.IsBad()
+	.IsInvalid()
 ) {
 	return false;
 }
@@ -133,7 +133,7 @@ var parser = new ParseParams.Parser<IReadOnlyList<int>>((string s) => {
 
 if (p.Default("-s", par: parser)
 	.WhenGood(r => { Seq = r.Value; return r; })
-	.IsBad()
+	.IsInvalid()
 ) {
 	return false;
 }
