@@ -192,7 +192,7 @@ public class TestParseParamsScan
 	[TestMethod]
 	public void TestScanTwoConditionFail()
 	{
-		string[] args = new[] { "-w", "1",};
+		string[] args = new[] { "-w", "1"};
 		var p = new ParseParams(args);
 
 		var r = p.Scan<double,string>(
@@ -205,6 +205,20 @@ public class TestParseParamsScan
 		Assert.IsTrue(r.IsMissingArgument());
 		Assert.AreEqual("-w",r.Name);
 		Assert.AreEqual((1.0,null),r.Value);
+		Assert.AreEqual(null, r.Error);
+	}
+
+	[TestMethod]
+	public void TestScanDefault()
+	{
+		string[] args = new[] { "-w", "1"};
+		var p = new ParseParams(args);
+
+		var r = p.Scan<int>("-z", 2);
+		Assert.IsTrue(r.IsBad());
+		Assert.IsTrue(r.IsMissing());
+		Assert.AreEqual("-z",r.Name);
+		Assert.AreEqual(2.0,r.Value);
 		Assert.AreEqual(null, r.Error);
 	}
 }
