@@ -29,6 +29,7 @@ public sealed class ParseParams
 	}
 
 	/// <summary>Constructor for Params using a custom parser</summary>
+	///<param name="args">String array of arguments that have already been seperated</param>
 	///<param name="customParser">A custom parser instance</param>
 	public ParseParams(string[] args, IParamsParser customParser)
 	{
@@ -63,7 +64,7 @@ public sealed class ParseParams
 		}
 		return new ParseResult<bool>(
 			result: ii == -1 ? Result.Missing : Result.Good,
-			name: @switch.Length == 1 ? @switch[0] : null,
+			name: name ?? (@switch.Length > 0 ? @switch[0] : null),
 			value: ii != -1
 		);
 	}
@@ -76,7 +77,7 @@ public sealed class ParseParams
 	///<param name="par">An optional custom parser to be used on the value</param>
 	///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<T> DefaultValue<T>(T def = default,Parser<T> par = null)
+	public ParseResult<T> Value<T>(T def = default,Parser<T> par = null)
 	{
 		T val = def;
 		if (Args.Count <= 0) {
@@ -104,7 +105,7 @@ public sealed class ParseParams
 	///<param name="par">An optional custom parser to be used on the value</param>
 	///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<T> Default<T>(string @switch,T def = default,Parser<T> par = null)
+	public ParseResult<T> Scan<T>(string @switch,T def = default,Parser<T> par = null)
 	{
 		T val = def;
 		int i = Args.IndexOf(@switch);
@@ -133,15 +134,14 @@ public sealed class ParseParams
 	/// The result Name may be null if multiple parameter names were given
 	///</summary>
 	///<param name="switch">The parameter name(s)</param>
-	///<param name="val">The output value</param>
 	///<param name="def">An optional default value used if parsing fails</param>
 	///<param name="par">An optional custom parser to be used on the value</param>
 	///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<T> Default<T>(string[] @switch,T def = default,Parser<T> par = null)
+	public ParseResult<T> Scan<T>(string[] @switch,T def = default,Parser<T> par = null)
 	{
 		foreach(string sw in @switch) {
-			var r = Default<T>(sw,def,par);
+			var r = Scan<T>(sw,def,par);
 			// Log.Debug($"Default sw={sw} r={r} val={val}");
 			if (r.Result == Result.MissingArgument ||
 				r.Result == Result.UnParsable ||
@@ -150,7 +150,7 @@ public sealed class ParseParams
 				return new ParseResult<T>(r.Result, sw, r.Value, r.Error);
 			}
 		}
-		string name = @switch.Length == 1 ? @switch[0] : null;
+		string name = @switch.Length > 0 ? @switch[0] : null;
 		return new ParseResult<T>(Result.Missing, name, default);
 	}
 
@@ -159,8 +159,6 @@ public sealed class ParseParams
 	/// The result Error property may be set if parsing failed
 	///</summary>
 	///<param name="switch">The parameter name</param>
-	///<param name="leftVal">The first output value</param>
-	///<param name="rightVal">The second output value</param>
 	///<param name="leftDef">An optional default value used if parsing fails</param>
 	///<param name="rightDef">An optional default value used if parsing fails</param>
 	///<param name="condition">A condition function that determines when second argument is required (defaults to always true)</param>
@@ -169,7 +167,7 @@ public sealed class ParseParams
 	///<typeparam name="T">The output type of the first value attempting to be parsed</typeparam>
 	///<typeparam name="U">The output type of the second value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<(T,U)> Default<T,U>(string @switch,
+	public ParseResult<(T,U)> Scan<T,U>(string @switch,
 		T leftDef = default, U rightDef = default, Func<T,bool> condition = null,
 		Parser<T> leftPar = null, Parser<U> rightPar = null)
 	{
@@ -220,8 +218,6 @@ public sealed class ParseParams
 	/// The result Name may be null if multiple parameter names were given
 	///</summary>
 	///<param name="switch">The parameter name(s)</param>
-	///<param name="leftVal">The first output value</param>
-	///<param name="rightVal">The second output value</param>
 	///<param name="leftDef">An optional default value used if parsing fails</param>
 	///<param name="rightDef">An optional default value used if parsing fails</param>
 	///<param name="condition">A condition function that determines when second argument is required (defaults to always true)</param>
@@ -230,12 +226,12 @@ public sealed class ParseParams
 	///<typeparam name="T">The output type of the first value attempting to be parsed</typeparam>
 	///<typeparam name="U">The output type of the second value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<(T,U)> Default<T,U>(string[] @switch,
+	public ParseResult<(T,U)> Scan<T,U>(string[] @switch,
 		T leftDef = default, U rightDef = default, Func<T,bool> condition = null,
 		Parser<T> leftPar = null, Parser<U> rightPar = null)
 	{
 		foreach(string sw in @switch) {
-			var r = Default<T,U>(sw,leftDef,rightDef,condition,leftPar,rightPar);
+			var r = Scan<T,U>(sw,leftDef,rightDef,condition,leftPar,rightPar);
 			// Log.Debug($"Default sw={sw} r={r} val={val}");
 			if (r.Result == Result.MissingArgument ||
 				r.Result == Result.UnParsable ||
@@ -244,82 +240,8 @@ public sealed class ParseParams
 				return new ParseResult<(T,U)>(r.Result, sw, r.Value, r.Error);
 			}
 		}
-		string name = @switch.Length == 1 ? @switch[0] : null;
+		string name = @switch.Length > 0 ? @switch[0] : null;
 		return new ParseResult<(T,U)>(Result.Missing, name, (default,default));
-	}
-
-	///<summary>
-	/// Expects to parse a value without an accompanying parameter
-	/// The result Error property may be set if parsing failed
-	///</summary>
-	///<param name="par">An optional custom parser to be used on the value</param>
-	///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
-	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<T> ExpectValue<T>(Parser<T> par = null)
-	{
-		var r = DefaultValue<T>(par: par);
-		//turn Missing into MissingArgument
-		if (r.Result == Result.Missing) {
-			return new ParseResult<T>(Result.MissingArgument, r.Name, r.Value, r.Error);
-		}
-		return r;
-	}
-
-	///<summary>
-	/// Expects to find the given parameter with no value
-	///</summary>
-	///<param name="switch">The name of the parameter</param>
-	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<bool> Expect(string @switch)
-	{
-		var has = Has(@switch);
-		//turn Missing into MissingArgument
-		if (has.Result == Result.Missing) {
-			return new ParseResult<bool>(Result.MissingArgument, has.Name, has.Value, has.Error);
-		}
-		return has;
-	}
-
-	///<summary>
-	/// Expects to parse a parameter with a single value
-	/// The result Error property may be set if parsing failed
-	///</summary>
-	///<param name="switch">The name fo the parameter</param>
-	///<param name="val">The output value</param>
-	///<param name="par">An optional custom parser to be used on the value</param>
-	///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
-	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<T> Expect<T>(string @switch, Parser<T> par = null)
-	{
-		var r = Default(@switch, par:par);
-		//turn Missing into MissingArgument
-		if (r.Result == Result.Missing) {
-			return new ParseResult<T>(Result.MissingArgument, r.Name, r.Value, r.Error);
-		}
-		return r;
-	}
-
-	///<summary>
-	/// Expects to parse a parameter with two values
-	/// The result Error property may be set if parsing failed
-	///</summary>
-	///<param name="switch">The name of the parameter</param>
-	///<param name="leftVal">The first output value</param>
-	///<param name="rightVal">The second output value</param>
-	///<param name="leftPar">An optional custom parser to be used on the first value</param>
-	///<param name="rightPar">An optional custom parser to be used on the second value</param>
-	///<typeparam name="T">The output type of the first value attempting to be parsed</typeparam>
-	///<typeparam name="U">The output type of the second value attempting to be parsed</typeparam>
-	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<(T,U)> Expect<T,U>(string @switch,
-		Parser<T> leftPar = null,Parser<U> rightPar = null)
-	{
-		var r = Default(@switch, leftPar:leftPar, rightPar:rightPar);
-		//turn Missing into MissingArgument
-		if (r.Result == Result.Missing) {
-			return new ParseResult<(T,U)>(Result.MissingArgument, r.Name, r.Value, r.Error);
-		}
-		return r;
 	}
 
 	//private parser instance

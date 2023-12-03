@@ -25,11 +25,18 @@ namespace Rasberry.Cli;
 ///</summary>
 public sealed class DefaultParser : IParamsParser
 {
+	/// <summary>
+	/// Default Constructor
+	/// </summary>
 	public DefaultParser()
 	{
 		ifp = CultureInfo.InvariantCulture.NumberFormat;
 	}
 
+	/// <summary>
+	/// Constructor with <c>IFormatProvider</c>
+	/// </summary>
+	/// <param name="provider">The format provider to use with parsing</param>
 	public DefaultParser(IFormatProvider provider)
 	{
 		ifp = provider;

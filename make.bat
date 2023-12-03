@@ -7,7 +7,7 @@ goto :EOF
 :usage
 echo Usage:
 echo %~n0 cover             run coverage
-echo %~n0 pack (version)    create nuget package and register package locally
+echo %~n0 pack              create nuget package and register package locally
 echo %~n0 depack (version)  unregister package from local repo
 
 goto :EOF
