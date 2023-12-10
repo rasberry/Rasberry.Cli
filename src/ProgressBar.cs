@@ -104,6 +104,7 @@ public class ProgressBar : IDisposable, IProgress<double>
 
 	void ResetTimer()
 	{
+		if (disposed) { return; }
 		var dontRepeat = TimeSpan.FromMilliseconds(-1);
 		timer.Change(animationInterval, dontRepeat);
 	}
