@@ -13,15 +13,6 @@ namespace Rasberry.Cli;
 /// </summary>
 public class ProgressBar : IDisposable, IProgressWithLabel<double>
 {
-	/// <summary>Dispose method</summary>
-	public void Dispose()
-	{
-		disposed = true;
-		UpdateText(string.Empty);
-		timer.Dispose();
-		GC.SuppressFinalize(this); //https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1816
-	}
-
 	/// <summary>Default Constructor</summary>
 	public ProgressBar()
 	{
@@ -36,15 +27,24 @@ public class ProgressBar : IDisposable, IProgressWithLabel<double>
 		}
 	}
 
+	/// <summary>Dispose method</summary>
+	public virtual void Dispose()
+	{
+		disposed = true;
+		UpdateText(string.Empty);
+		timer.Dispose();
+		GC.SuppressFinalize(this); //https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1816
+	}
+
 	///<summary>Sets the progess amount</summary>
 	///<param name="value">The progress amount. This value should be between 0 and 1</param>
-	public void Report(double value)
+	public virtual void Report(double value)
 	{
 		Interlocked.Exchange(ref currentProgress, value);
 	}
 
 	/// <inheritdoc />
-	public string Label { get; set; } = null;
+	public virtual string Label { get; set; } = null;
 
 	///<summary>Include a prefix string in front of the progress bar</summary>
 	[Obsolete("Deprecated please use Label instead")]
