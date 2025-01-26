@@ -3,15 +3,15 @@ using System.IO;
 using System.Text;
 using System.Threading;
 
-// This is a slightly modified version of ProgressBar.cs by DanielSWolf
+// This is a modified version of ProgressBar.cs by DanielSWolf
 // https://gist.github.com/DanielSWolf/0ab6a96899cc5377bf54
 
 namespace Rasberry.Cli;
 
 /// <summary>
-/// An ASCII progress bar
+/// A command line progress bar
 /// </summary>
-public class ProgressBar : IDisposable, IProgress<double>
+public class ProgressBar : IDisposable, IProgressWithLabel<double>
 {
 	/// <summary>Dispose method</summary>
 	public void Dispose()
@@ -43,8 +43,15 @@ public class ProgressBar : IDisposable, IProgress<double>
 		Interlocked.Exchange(ref currentProgress, value);
 	}
 
+	/// <inheritdoc />
+	public string Label { get; set; } = null;
+
 	///<summary>Include a prefix string in front of the progress bar</summary>
-	public string Prefix { get; set; } = null;
+	[Obsolete("Deprecated please use Label instead")]
+	public string Prefix {
+		get => Label;
+		set => Label = value;
+	}
 
 	///<summary>Provide a custom <c>TextWriter</c> instead of using Console.Out</summary>
 	public TextWriter Writer {
@@ -70,7 +77,7 @@ public class ProgressBar : IDisposable, IProgress<double>
 		string spacer = new('-', blockCount - progressBlockCount);
 		char signal = animation[animationIndex++ % animation.Length];
 
-		string text = $"{Prefix}[{filled}{spacer}] {percent,3}% {signal}";
+		string text = $"{Label}[{filled}{spacer}] {percent,3}% {signal}";
 		UpdateText(text);
 		ResetTimer();
 	}
