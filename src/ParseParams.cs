@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Rasberry.Cli;
 
@@ -8,7 +7,8 @@ namespace Rasberry.Cli;
 public sealed class ParseParams
 {
 	/// <summary>Possible results from an operation</summary>
-	public enum Result {
+	public enum Result
+	{
 		///<summary>Parameter is usable</summary>
 		Good = 0,
 		///<summary>Parameter was not found</summary>
@@ -24,7 +24,7 @@ public sealed class ParseParams
 
 	///<summary>Constructor for Params class</summary>
 	///<param name="args">String array of arguments that have already been seperated</param>
-	public ParseParams(string[] args) : this (args,null)
+	public ParseParams(string[] args) : this(args, null)
 	{
 	}
 
@@ -56,7 +56,7 @@ public sealed class ParseParams
 		string name = null;
 		foreach(string sw in @switch) {
 			int i = Args.IndexOf(sw);
-			if (i != -1) {
+			if(i != -1) {
 				Args.RemoveAt(i);
 				ii = i;
 				name = sw;
@@ -77,19 +77,19 @@ public sealed class ParseParams
 	///<param name="par">An optional custom parser to be used on the value</param>
 	///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<T> Value<T>(T def = default,Parser<T> par = null)
+	public ParseResult<T> Value<T>(T def = default, Parser<T> par = null)
 	{
 		T val = def;
-		if (Args.Count <= 0) {
+		if(Args.Count <= 0) {
 			return new ParseResult<T>(Result.Missing, null, val);
 		}
 		string curr = Args[0];
-		if (par == null) { par = ParserInst.Parse<T>; }
+		if(par == null) { par = ParserInst.Parse<T>; }
 
 		Exception err;
 		(val, err) = ParseAndCapture(curr, par ?? ParserInst.Parse<T>, def);
 
-		if (err != null) {
+		if(err != null) {
 			return new ParseResult<T>(Result.UnParsable, null, val, err);
 		}
 		Args.RemoveAt(0);
@@ -105,25 +105,25 @@ public sealed class ParseParams
 	///<param name="par">An optional custom parser to be used on the value</param>
 	///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<T> Scan<T>(string @switch,T def = default,Parser<T> par = null)
+	public ParseResult<T> Scan<T>(string @switch, T def = default, Parser<T> par = null)
 	{
 		T val = def;
 		int i = Args.IndexOf(@switch);
-		if (i == -1) {
+		if(i == -1) {
 			return new ParseResult<T>(Result.Missing, @switch, val);
 		}
-		if (i+1 >= Args.Count) {
+		if(i + 1 >= Args.Count) {
 			return new ParseResult<T>(Result.MissingArgument, @switch, val);
 		}
 
 		Exception err;
-		(val, err) = ParseAndCapture(Args[i+1], par ?? ParserInst.Parse<T>, def);
+		(val, err) = ParseAndCapture(Args[i + 1], par ?? ParserInst.Parse<T>, def);
 
-		if (err != null) {
+		if(err != null) {
 			return new ParseResult<T>(Result.UnParsable, @switch, val, err);
 		}
 
-		Args.RemoveAt(i+1);
+		Args.RemoveAt(i + 1);
 		Args.RemoveAt(i);
 		return new ParseResult<T>(Result.Good, @switch, val);
 	}
@@ -138,12 +138,12 @@ public sealed class ParseParams
 	///<param name="par">An optional custom parser to be used on the value</param>
 	///<typeparam name="T">The output type of the value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<T> Scan<T>(string[] @switch,T def = default,Parser<T> par = null)
+	public ParseResult<T> Scan<T>(string[] @switch, T def = default, Parser<T> par = null)
 	{
 		foreach(string sw in @switch) {
-			var r = Scan<T>(sw,def,par);
+			var r = Scan<T>(sw, def, par);
 			// Log.Debug($"Default sw={sw} r={r} val={val}");
-			if (r.Result == Result.MissingArgument ||
+			if(r.Result == Result.MissingArgument ||
 				r.Result == Result.UnParsable ||
 				r.Result == Result.Good
 			) {
@@ -167,49 +167,49 @@ public sealed class ParseParams
 	///<typeparam name="T">The output type of the first value attempting to be parsed</typeparam>
 	///<typeparam name="U">The output type of the second value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<(T,U)> Scan<T,U>(string @switch,
-		T leftDef = default, U rightDef = default, Func<T,bool> condition = null,
+	public ParseResult<(T, U)> Scan<T, U>(string @switch,
+		T leftDef = default, U rightDef = default, Func<T, bool> condition = null,
 		Parser<T> leftPar = null, Parser<U> rightPar = null)
 	{
 		T leftVal = leftDef;
 		U rightVal = rightDef;
 		int i = Args.IndexOf(@switch);
-		if (i == -1) {
-			return new ParseResult<(T,U)>(Result.Missing, @switch, (leftVal,rightVal));
+		if(i == -1) {
+			return new ParseResult<(T, U)>(Result.Missing, @switch, (leftVal, rightVal));
 		}
-		if (i+1 >= Args.Count) {
-			return new ParseResult<(T,U)>(Result.MissingArgument, @switch, (leftVal,rightVal));
+		if(i + 1 >= Args.Count) {
+			return new ParseResult<(T, U)>(Result.MissingArgument, @switch, (leftVal, rightVal));
 		}
 
 		Exception leftErr;
-		(leftVal, leftErr) = ParseAndCapture(Args[i+1], leftPar ?? ParserInst.Parse<T>, leftDef);
+		(leftVal, leftErr) = ParseAndCapture(Args[i + 1], leftPar ?? ParserInst.Parse<T>, leftDef);
 
-		if (leftErr != null) {
-			return new ParseResult<(T,U)>(Result.UnParsable, @switch, (leftVal,rightVal), leftErr);
+		if(leftErr != null) {
+			return new ParseResult<(T, U)>(Result.UnParsable, @switch, (leftVal, rightVal), leftErr);
 		}
 
 		//if condition function returns false - we don't look for a second arg
-		if (condition != null && !condition(leftVal)) {
-			Args.RemoveAt(i+1);
+		if(condition != null && !condition(leftVal)) {
+			Args.RemoveAt(i + 1);
 			Args.RemoveAt(i);
-			return new ParseResult<(T,U)>(Result.Good, @switch, (leftVal,rightVal));
+			return new ParseResult<(T, U)>(Result.Good, @switch, (leftVal, rightVal));
 		}
 
-		if (i+2 >= Args.Count) {
-			return new ParseResult<(T,U)>(Result.MissingArgument, @switch, (leftVal,rightVal));
+		if(i + 2 >= Args.Count) {
+			return new ParseResult<(T, U)>(Result.MissingArgument, @switch, (leftVal, rightVal));
 		}
 
 		Exception rightErr;
-		(rightVal, rightErr) = ParseAndCapture(Args[i+2], rightPar ?? ParserInst.Parse<U>, rightDef);
+		(rightVal, rightErr) = ParseAndCapture(Args[i + 2], rightPar ?? ParserInst.Parse<U>, rightDef);
 
-		if (rightErr != null) {
-			return new ParseResult<(T,U)>(Result.UnParsable, @switch, (leftVal,rightVal), rightErr);
+		if(rightErr != null) {
+			return new ParseResult<(T, U)>(Result.UnParsable, @switch, (leftVal, rightVal), rightErr);
 		}
 
-		Args.RemoveAt(i+2);
-		Args.RemoveAt(i+1);
+		Args.RemoveAt(i + 2);
+		Args.RemoveAt(i + 1);
 		Args.RemoveAt(i);
-		return new ParseResult<(T,U)>(Result.Good, @switch, (leftVal,rightVal));
+		return new ParseResult<(T, U)>(Result.Good, @switch, (leftVal, rightVal));
 	}
 
 	///<summary>
@@ -226,29 +226,29 @@ public sealed class ParseParams
 	///<typeparam name="T">The output type of the first value attempting to be parsed</typeparam>
 	///<typeparam name="U">The output type of the second value attempting to be parsed</typeparam>
 	///<returns><c>ParseResult</c> value</returns>
-	public ParseResult<(T,U)> Scan<T,U>(string[] @switch,
-		T leftDef = default, U rightDef = default, Func<T,bool> condition = null,
+	public ParseResult<(T, U)> Scan<T, U>(string[] @switch,
+		T leftDef = default, U rightDef = default, Func<T, bool> condition = null,
 		Parser<T> leftPar = null, Parser<U> rightPar = null)
 	{
 		foreach(string sw in @switch) {
-			var r = Scan<T,U>(sw,leftDef,rightDef,condition,leftPar,rightPar);
+			var r = Scan<T, U>(sw, leftDef, rightDef, condition, leftPar, rightPar);
 			// Log.Debug($"Default sw={sw} r={r} val={val}");
-			if (r.Result == Result.MissingArgument ||
+			if(r.Result == Result.MissingArgument ||
 				r.Result == Result.UnParsable ||
 				r.Result == Result.Good
 			) {
-				return new ParseResult<(T,U)>(r.Result, sw, r.Value, r.Error);
+				return new ParseResult<(T, U)>(r.Result, sw, r.Value, r.Error);
 			}
 		}
 		string name = @switch.Length > 0 ? @switch[0] : null;
-		return new ParseResult<(T,U)>(Result.Missing, name, (default,default));
+		return new ParseResult<(T, U)>(Result.Missing, name, (default, default));
 	}
 
 	//private parser instance
 	readonly IParamsParser ParserInst;
 
 	//helper for running the parser and capturing any errors
-	static (T,Exception) ParseAndCapture<T>(string sub, Parser<T> par, T def = default)
+	static (T, Exception) ParseAndCapture<T>(string sub, Parser<T> par, T def = default)
 	{
 		try {
 			return (par(sub), null);

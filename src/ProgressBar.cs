@@ -22,7 +22,7 @@ public class ProgressBar : IDisposable, IProgressWithLabel<double>
 		// a progress bar is only for temporary display in a console window
 		// if the console output is redirected to a file, draw nothing
 		// otherwise, we'll end up with a lot of garbage in the target file
-		if (!Console.IsOutputRedirected) {
+		if(!Console.IsOutputRedirected) {
 			ResetTimer();
 		}
 	}
@@ -66,13 +66,13 @@ public class ProgressBar : IDisposable, IProgressWithLabel<double>
 
 	void TimerHandler(object state)
 	{
-		if (disposed) { return; }
+		if(disposed) { return; }
 
 		// Make sure value is in [0..1] range
-		double value = Math.Clamp(currentProgress,0,1);
+		double value = Math.Clamp(currentProgress, 0, 1);
 
-		int progressBlockCount = (int) (value * blockCount);
-		int percent = (int) (value * 100);
+		int progressBlockCount = (int)(value * blockCount);
+		int percent = (int)(value * 100);
 		string filled = new('#', progressBlockCount);
 		string spacer = new('-', blockCount - progressBlockCount);
 		char signal = animation[animationIndex++ % animation.Length];
@@ -87,7 +87,7 @@ public class ProgressBar : IDisposable, IProgressWithLabel<double>
 		// Get length of common portion
 		int commonPrefixLength = 0;
 		int commonLength = Math.Min(currentText.Length, text.Length);
-		while (commonPrefixLength < commonLength && text[commonPrefixLength] == currentText[commonPrefixLength]) {
+		while(commonPrefixLength < commonLength && text[commonPrefixLength] == currentText[commonPrefixLength]) {
 			commonPrefixLength++;
 		}
 
@@ -100,7 +100,7 @@ public class ProgressBar : IDisposable, IProgressWithLabel<double>
 
 		// If the new text is shorter than the old one: delete overlapping characters
 		int overlapCount = currentText.Length - text.Length;
-		if (overlapCount > 0) {
+		if(overlapCount > 0) {
 			outputBuilder.Append(' ', overlapCount);
 			outputBuilder.Append('\b', overlapCount);
 		}
@@ -111,7 +111,7 @@ public class ProgressBar : IDisposable, IProgressWithLabel<double>
 
 	void ResetTimer()
 	{
-		if (disposed) { return; }
+		if(disposed) { return; }
 		var dontRepeat = TimeSpan.FromMilliseconds(-1);
 		timer.Change(animationInterval, dontRepeat);
 	}

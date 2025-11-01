@@ -1,5 +1,5 @@
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace Rasberry.Cli.Tests;
 
@@ -14,14 +14,14 @@ public class TestParseParamsScan
 
 		var r1 = p.Scan<double>("-w");
 		Assert.IsTrue(r1.IsGood());
-		Assert.AreEqual(1.0,r1.Value);
-		Assert.AreEqual("-w",r1.Name);
+		Assert.AreEqual(1.0, r1.Value);
+		Assert.AreEqual("-w", r1.Name);
 		Assert.IsNull(r1.Error);
 
 		var r2 = p.Scan<string>("-x");
 		Assert.IsTrue(r2.IsGood());
-		Assert.AreEqual("hi",r2.Value);
-		Assert.AreEqual("-x",r2.Name);
+		Assert.AreEqual("hi", r2.Value);
+		Assert.AreEqual("-x", r2.Name);
 		Assert.IsNull(r2.Error);
 
 		var rem = p.Remaining();
@@ -37,8 +37,8 @@ public class TestParseParamsScan
 		var r = p.Scan<double>("-q");
 		Assert.IsTrue(r.IsBad());
 		Assert.IsTrue(r.IsMissing());
-		Assert.AreEqual("-q",r.Name);
-		Assert.AreEqual(default,r.Value);
+		Assert.AreEqual("-q", r.Name);
+		Assert.AreEqual(default, r.Value);
 		Assert.IsNull(r.Error);
 	}
 
@@ -51,8 +51,8 @@ public class TestParseParamsScan
 		var r = p.Scan<double>("-w");
 		Assert.IsTrue(r.IsBad());
 		Assert.IsTrue(r.IsUnParsable());
-		Assert.AreEqual("-w",r.Name);
-		Assert.AreEqual(default,r.Value);
+		Assert.AreEqual("-w", r.Name);
+		Assert.AreEqual(default, r.Value);
 		Assert.AreEqual(typeof(FormatException), r.Error.GetType());
 	}
 
@@ -64,8 +64,8 @@ public class TestParseParamsScan
 
 		var r = p.Scan<double>("-w");
 		Assert.IsTrue(r.IsGood());
-		Assert.AreEqual(1.0,r.Value);
-		Assert.AreEqual("-w",r.Name);
+		Assert.AreEqual(1.0, r.Value);
+		Assert.AreEqual("-w", r.Name);
 		Assert.IsNull(r.Error);
 
 		var rem = p.Remaining();
@@ -81,8 +81,8 @@ public class TestParseParamsScan
 		var r = p.Scan<double>("-w");
 		Assert.IsTrue(r.IsBad());
 		Assert.IsTrue(r.IsMissingArgument());
-		Assert.AreEqual("-w",r.Name);
-		Assert.AreEqual(default,r.Value);
+		Assert.AreEqual("-w", r.Name);
+		Assert.AreEqual(default, r.Value);
 		Assert.IsNull(r.Error);
 	}
 
@@ -94,14 +94,14 @@ public class TestParseParamsScan
 
 		var r1 = p.Scan<double>(new string[] { "-v", "-w" });
 		Assert.IsTrue(r1.IsGood());
-		Assert.AreEqual(1.0,r1.Value);
-		Assert.AreEqual("-w",r1.Name);
+		Assert.AreEqual(1.0, r1.Value);
+		Assert.AreEqual("-w", r1.Name);
 		Assert.IsNull(r1.Error);
 
 		var r2 = p.Scan<double>(new string[] { "-x", "-y" });
 		Assert.IsTrue(r2.IsGood());
-		Assert.AreEqual(2.0,r2.Value);
-		Assert.AreEqual("-x",r2.Name);
+		Assert.AreEqual(2.0, r2.Value);
+		Assert.AreEqual("-x", r2.Name);
 		Assert.IsNull(r2.Error);
 
 		var rem = p.Remaining();
@@ -117,8 +117,8 @@ public class TestParseParamsScan
 		var r = p.Scan<double>(new string[] { "-u", "-v" });
 		Assert.IsTrue(r.IsBad());
 		Assert.IsTrue(r.IsMissing());
-		Assert.AreEqual("-u",r.Name);
-		Assert.AreEqual(default,r.Value);
+		Assert.AreEqual("-u", r.Name);
+		Assert.AreEqual(default, r.Value);
 		Assert.IsNull(r.Error);
 	}
 
@@ -128,11 +128,11 @@ public class TestParseParamsScan
 		string[] args = new[] { "-w", "1", "hi", "-x" };
 		var p = new ParseParams(args);
 
-		var r = p.Scan<double,string>("-w");
+		var r = p.Scan<double, string>("-w");
 		Assert.IsTrue(r.IsGood());
-		Assert.AreEqual(1.0,r.Value.Item1);
-		Assert.AreEqual("hi",r.Value.Item2);
-		Assert.AreEqual("-w",r.Name);
+		Assert.AreEqual(1.0, r.Value.Item1);
+		Assert.AreEqual("hi", r.Value.Item2);
+		Assert.AreEqual("-w", r.Name);
 		Assert.IsNull(r.Error);
 
 		var rem = p.Remaining();
@@ -145,11 +145,11 @@ public class TestParseParamsScan
 		string[] args = new[] { "-w", "1", "hi", "-x" };
 		var p = new ParseParams(args);
 
-		var r = p.Scan<double,string>(new[]{"--wide","-w"});
+		var r = p.Scan<double, string>(new[] { "--wide", "-w" });
 		Assert.IsTrue(r.IsGood());
-		Assert.AreEqual(1.0,r.Value.Item1);
-		Assert.AreEqual("hi",r.Value.Item2);
-		Assert.AreEqual("-w",r.Name);
+		Assert.AreEqual(1.0, r.Value.Item1);
+		Assert.AreEqual("hi", r.Value.Item2);
+		Assert.AreEqual("-w", r.Name);
 		Assert.IsNull(r.Error);
 
 		var rem = p.Remaining();
@@ -159,66 +159,66 @@ public class TestParseParamsScan
 	[TestMethod]
 	public void TestScanTwoMissingArgument()
 	{
-		string[] args = new[] { "-w", "1",};
+		string[] args = new[] { "-w", "1", };
 		var p = new ParseParams(args);
 
-		var r = p.Scan<double,string>("-w");
+		var r = p.Scan<double, string>("-w");
 		Assert.IsTrue(r.IsBad());
 		Assert.IsTrue(r.IsMissingArgument());
-		Assert.AreEqual("-w",r.Name);
-		Assert.AreEqual((1.0,null),r.Value);
+		Assert.AreEqual("-w", r.Name);
+		Assert.AreEqual((1.0, null), r.Value);
 		Assert.IsNull(r.Error);
 	}
 
 	[TestMethod]
 	public void TestScanTwoConditionSuccess()
 	{
-		string[] args = new[] { "-w", "1"};
+		string[] args = new[] { "-w", "1" };
 		var p = new ParseParams(args);
 
-		var r = p.Scan<double,string>(
-			@switch:"-w",
+		var r = p.Scan<double, string>(
+			@switch: "-w",
 			condition: (double d) => {
 				return false; //second argument optional
 			}
 		);
 		Assert.IsTrue(r.IsGood());
-		Assert.AreEqual(1.0,r.Value.Item1);
+		Assert.AreEqual(1.0, r.Value.Item1);
 		Assert.IsNull(r.Value.Item2);
-		Assert.AreEqual("-w",r.Name);
+		Assert.AreEqual("-w", r.Name);
 		Assert.IsNull(r.Error);
 	}
 
 	[TestMethod]
 	public void TestScanTwoConditionFail()
 	{
-		string[] args = new[] { "-w", "1"};
+		string[] args = new[] { "-w", "1" };
 		var p = new ParseParams(args);
 
-		var r = p.Scan<double,string>(
-			@switch:"-w",
+		var r = p.Scan<double, string>(
+			@switch: "-w",
 			condition: (double d) => {
 				return true; //second argument required
 			}
 		);
 		Assert.IsTrue(r.IsBad());
 		Assert.IsTrue(r.IsMissingArgument());
-		Assert.AreEqual("-w",r.Name);
-		Assert.AreEqual((1.0,null),r.Value);
+		Assert.AreEqual("-w", r.Name);
+		Assert.AreEqual((1.0, null), r.Value);
 		Assert.IsNull(r.Error);
 	}
 
 	[TestMethod]
 	public void TestScanDefault()
 	{
-		string[] args = new[] { "-w", "1"};
+		string[] args = new[] { "-w", "1" };
 		var p = new ParseParams(args);
 
 		var r = p.Scan<int>("-z", 2);
 		Assert.IsTrue(r.IsBad());
 		Assert.IsTrue(r.IsMissing());
-		Assert.AreEqual("-z",r.Name);
-		Assert.AreEqual(2.0,r.Value);
+		Assert.AreEqual("-z", r.Name);
+		Assert.AreEqual(2.0, r.Value);
 		Assert.IsNull(r.Error);
 	}
 }
