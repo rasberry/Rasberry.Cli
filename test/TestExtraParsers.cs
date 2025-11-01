@@ -65,7 +65,7 @@ public class TestExtraParsers
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(GetSuccessData), DynamicDataSourceType.Method)]
+	[DynamicData(nameof(GetSuccessData))]
 	public void ParseSequenceSuccess(string raw, FoodStuff[] expected)
 	{
 		var parser = new ParseParams.Parser<FoodStuff>((string arg) => {
@@ -86,7 +86,7 @@ public class TestExtraParsers
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(GetFailData), DynamicDataSourceType.Method)]
+	[DynamicData(nameof(GetFailData))]
 	public void ParseSequenceFail(string raw, Type err)
 	{
 		var parser = new ParseParams.Parser<FoodStuff>((string arg) => {

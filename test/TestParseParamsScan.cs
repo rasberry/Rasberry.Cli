@@ -16,16 +16,16 @@ public class TestParseParamsScan
 		Assert.IsTrue(r1.IsGood());
 		Assert.AreEqual(1.0,r1.Value);
 		Assert.AreEqual("-w",r1.Name);
-		Assert.AreEqual(null, r1.Error);
+		Assert.IsNull(r1.Error);
 
 		var r2 = p.Scan<string>("-x");
 		Assert.IsTrue(r2.IsGood());
 		Assert.AreEqual("hi",r2.Value);
 		Assert.AreEqual("-x",r2.Name);
-		Assert.AreEqual(null, r2.Error);
+		Assert.IsNull(r2.Error);
 
 		var rem = p.Remaining();
-		Assert.IsTrue(rem.Length == 0);
+		Assert.IsEmpty(rem);
 	}
 
 	[TestMethod]
@@ -39,7 +39,7 @@ public class TestParseParamsScan
 		Assert.IsTrue(r.IsMissing());
 		Assert.AreEqual("-q",r.Name);
 		Assert.AreEqual(default,r.Value);
-		Assert.AreEqual(null, r.Error);
+		Assert.IsNull(r.Error);
 	}
 
 	[TestMethod]
@@ -66,10 +66,10 @@ public class TestParseParamsScan
 		Assert.IsTrue(r.IsGood());
 		Assert.AreEqual(1.0,r.Value);
 		Assert.AreEqual("-w",r.Name);
-		Assert.AreEqual(null, r.Error);
+		Assert.IsNull(r.Error);
 
 		var rem = p.Remaining();
-		Assert.IsTrue(rem.Length == 2);
+		Assert.HasCount(2, rem);
 	}
 
 	[TestMethod]
@@ -83,7 +83,7 @@ public class TestParseParamsScan
 		Assert.IsTrue(r.IsMissingArgument());
 		Assert.AreEqual("-w",r.Name);
 		Assert.AreEqual(default,r.Value);
-		Assert.AreEqual(null, r.Error);
+		Assert.IsNull(r.Error);
 	}
 
 	[TestMethod]
@@ -96,16 +96,16 @@ public class TestParseParamsScan
 		Assert.IsTrue(r1.IsGood());
 		Assert.AreEqual(1.0,r1.Value);
 		Assert.AreEqual("-w",r1.Name);
-		Assert.AreEqual(null, r1.Error);
+		Assert.IsNull(r1.Error);
 
 		var r2 = p.Scan<double>(new string[] { "-x", "-y" });
 		Assert.IsTrue(r2.IsGood());
 		Assert.AreEqual(2.0,r2.Value);
 		Assert.AreEqual("-x",r2.Name);
-		Assert.AreEqual(null, r2.Error);
+		Assert.IsNull(r2.Error);
 
 		var rem = p.Remaining();
-		Assert.IsTrue(rem.Length == 0);
+		Assert.IsEmpty(rem);
 	}
 
 	[TestMethod]
@@ -119,7 +119,7 @@ public class TestParseParamsScan
 		Assert.IsTrue(r.IsMissing());
 		Assert.AreEqual("-u",r.Name);
 		Assert.AreEqual(default,r.Value);
-		Assert.AreEqual(null, r.Error);
+		Assert.IsNull(r.Error);
 	}
 
 	[TestMethod]
@@ -133,10 +133,10 @@ public class TestParseParamsScan
 		Assert.AreEqual(1.0,r.Value.Item1);
 		Assert.AreEqual("hi",r.Value.Item2);
 		Assert.AreEqual("-w",r.Name);
-		Assert.AreEqual(null, r.Error);
+		Assert.IsNull(r.Error);
 
 		var rem = p.Remaining();
-		Assert.IsTrue(rem.Length == 1);
+		Assert.HasCount(1, rem);
 	}
 
 	[TestMethod]
@@ -150,10 +150,10 @@ public class TestParseParamsScan
 		Assert.AreEqual(1.0,r.Value.Item1);
 		Assert.AreEqual("hi",r.Value.Item2);
 		Assert.AreEqual("-w",r.Name);
-		Assert.AreEqual(null, r.Error);
+		Assert.IsNull(r.Error);
 
 		var rem = p.Remaining();
-		Assert.IsTrue(rem.Length == 1);
+		Assert.HasCount(1, rem);
 	}
 
 	[TestMethod]
@@ -167,7 +167,7 @@ public class TestParseParamsScan
 		Assert.IsTrue(r.IsMissingArgument());
 		Assert.AreEqual("-w",r.Name);
 		Assert.AreEqual((1.0,null),r.Value);
-		Assert.AreEqual(null, r.Error);
+		Assert.IsNull(r.Error);
 	}
 
 	[TestMethod]
@@ -184,9 +184,9 @@ public class TestParseParamsScan
 		);
 		Assert.IsTrue(r.IsGood());
 		Assert.AreEqual(1.0,r.Value.Item1);
-		Assert.AreEqual(null,r.Value.Item2);
+		Assert.IsNull(r.Value.Item2);
 		Assert.AreEqual("-w",r.Name);
-		Assert.AreEqual(null, r.Error);
+		Assert.IsNull(r.Error);
 	}
 
 	[TestMethod]
@@ -205,7 +205,7 @@ public class TestParseParamsScan
 		Assert.IsTrue(r.IsMissingArgument());
 		Assert.AreEqual("-w",r.Name);
 		Assert.AreEqual((1.0,null),r.Value);
-		Assert.AreEqual(null, r.Error);
+		Assert.IsNull(r.Error);
 	}
 
 	[TestMethod]
@@ -219,6 +219,6 @@ public class TestParseParamsScan
 		Assert.IsTrue(r.IsMissing());
 		Assert.AreEqual("-z",r.Name);
 		Assert.AreEqual(2.0,r.Value);
-		Assert.AreEqual(null, r.Error);
+		Assert.IsNull(r.Error);
 	}
 }

@@ -11,7 +11,7 @@ public class TestDefaultParser
 	static readonly DefaultParser parser = new();
 
 	[TestMethod]
-	[DynamicData(nameof(GetSuccessData), DynamicDataSourceType.Method)]
+	[DynamicData(nameof(GetSuccessData))]
 	public void ParseSuccess(Type dest, string raw, object expected)
 	{
 		object parsed = parser.Parse(dest,raw);
@@ -107,7 +107,7 @@ public class TestDefaultParser
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(GetFailData), DynamicDataSourceType.Method)]
+	[DynamicData(nameof(GetFailData))]
 	public void ParseFail(Type dest, string raw, Type err)
 	{
 		Assert.That.ThrowsExceptionType(err, () => {

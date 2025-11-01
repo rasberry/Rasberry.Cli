@@ -53,11 +53,12 @@ public class TestPrintHelper
 	}
 
 	[TestMethod]
-	[ExpectedException(typeof(NullReferenceException))]
 	public void TestNDOneNullName()
 	{
 		var sb = new StringBuilder();
-		PrintHelper.ND(sb,1,null,"desc");
+		Assert.Throws<NullReferenceException>(() => {
+			PrintHelper.ND(sb, 1, null, "desc");
+		});
 	}
 
 	[TestMethod]

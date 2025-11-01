@@ -1,5 +1,7 @@
 @echo off
 setlocal
+set NUGETROOT="%userprofile%\.nuget"
+
 if "%~1"=="" goto usage
 call :%*
 goto :EOF
@@ -28,7 +30,6 @@ goto :EOF
 call dotnet pack -c Release
 
 ::put packages in existing .nuget folder
-set NUGETROOT="%userprofile%\.nuget"
 for %%n in ("%~dp0src\bin\Release\*.nupkg") do (
 	echo "Installing %%n"
 	call nuget add "%%n" -source "%NUGETROOT:"=%\nuget"
@@ -43,7 +44,7 @@ goto :EOF
 :depack
 if "%~1"=="" echo "missing package version" && goto :EOF
 
-set NUGETROOT="%userprofile%\.nuget"
+
 call nuget delete "Rasberry.Cli" "%~1" -NonInteractive -Source "%NUGETROOT:"=%\nuget"
 call nuget delete "Rasberry.Cli" "%~1" -NonInteractive -Source "%NUGETROOT:"=%\symbols"
 goto :EOF
