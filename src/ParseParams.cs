@@ -70,7 +70,7 @@ public sealed class ParseParams
 		}
 		return new ParseResult<bool>(
 			result: ii == -1 ? Result.Missing : Result.Good,
-			name: name ?? (@switch.Length > 0 ? @switch[0] : null),
+			name: name ?? @switch[0],
 			value: ii != -1
 		);
 	}
@@ -260,7 +260,7 @@ public sealed class ParseParams
 				return new ParseResult<(T, U)>(r.Result, sw, r.Value, r.Error);
 			}
 		}
-		string name = @switch.Length > 0 ? @switch[0] : null;
+		string name = @switch[0];
 		return new ParseResult<(T, U)>(Result.Missing, name, (default, default));
 	}
 

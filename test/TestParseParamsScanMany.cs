@@ -81,4 +81,16 @@ public class TestParseParamsScanMany
 		Assert.IsNull(res.Value);
 		Assert.IsInstanceOfType<FormatException>(res.Error);
 	}
+
+	[TestMethod]
+	public void TestScanManyNoValues()
+	{
+		string[] args = new[] { "-x", "1", };
+		var p = new ParseParams(args);
+
+		var res = p.ScanMany<int>("-w");
+		Assert.AreEqual(ParseParams.Result.Missing, res.Result);
+		Assert.IsNull(res.Value);
+		Assert.IsNull(res.Error);
+	}
 }
