@@ -291,6 +291,29 @@ public sealed class ParseParams
 			throw new ArgumentOutOfRangeException(nameof(@switch));
 		}
 
+		var result = ScanMany(@switch, (item, raw) => {
+			var parser = par ?? ParserInst.Parse<T>;
+			return parser(raw);
+		});
+
+		return result;
+	}
+
+	/// <summary>
+	/// Tries to parse all parameters with the given name(s)
+	/// </summary>
+	/// <typeparam name="T">The output type of the values attempting to be parsed</typeparam>
+	/// <param name="switch">The parameter name(s)</param>
+	/// <param name="parseHandler">A custom function used to parse each item name-value</param>
+	/// <returns><c>ParseResult</c> with a collection of values</returns>
+	public ParseResult<IEnumerable<T>> ScanMany<T>(string[] @switch, Func<string, string, T> parseHandler)
+	{
+		ArgumentNullException.ThrowIfNull(@switch);
+		ArgumentNullException.ThrowIfNull(parseHandler);
+		if(@switch.Length < 1) {
+			throw new ArgumentOutOfRangeException(nameof(@switch));
+		}
+
 		bool anyFound = false;
 		int len = Args.Count;
 		var valueList = new List<T>();
@@ -304,7 +327,17 @@ public sealed class ParseParams
 				return new ParseResult<IEnumerable<T>>(Result.MissingArgument, item, null);
 			}
 
-			var (val, err) = ParseAndCapture(Args[a + 1], par ?? ParserInst.Parse<T>, default);
+			//special version of ParseAndCapture
+			T val = default;
+			Exception err = null;
+
+			try {
+				val = parseHandler(item, Args[a + 1]);
+			}
+			catch(Exception e) {
+				err = e;
+			}
+
 			if(err != null) {
 				return new ParseResult<IEnumerable<T>>(Result.UnParsable, item, null, err);
 			}
