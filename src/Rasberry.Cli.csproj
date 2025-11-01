@@ -18,7 +18,7 @@
     <PackageId>Rasberry.Cli</PackageId>
     <Authors>rasberry</Authors>
     <Description>A library with some helpful functions for command line parsing</Description>
-    <VersionPrefix>2.3.2</VersionPrefix>
+    <VersionPrefix>2.4.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
