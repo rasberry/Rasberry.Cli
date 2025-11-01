@@ -21,6 +21,7 @@ public class TestParseParamsScanMany
 		Assert.AreEqual(1, items[0]);
 		Assert.AreEqual(2, items[1]);
 		Assert.AreEqual(3, items[2]);
+		Assert.IsEmpty(p.Remaining());
 	}
 
 	[TestMethod]
@@ -38,6 +39,7 @@ public class TestParseParamsScanMany
 		Assert.AreEqual(2, items[1]);
 		Assert.AreEqual(3, items[2]);
 		Assert.AreEqual(4, items[3]);
+		Assert.IsEmpty(p.Remaining());
 	}
 
 	[TestMethod]
@@ -78,6 +80,5 @@ public class TestParseParamsScanMany
 		Assert.AreEqual(ParseParams.Result.UnParsable, res.Result);
 		Assert.IsNull(res.Value);
 		Assert.IsInstanceOfType<FormatException>(res.Error);
-
 	}
 }
