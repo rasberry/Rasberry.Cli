@@ -221,4 +221,20 @@ public class TestParseParamsScan
 		Assert.AreEqual(2.0, r.Value);
 		Assert.IsNull(r.Error);
 	}
+
+	[TestMethod]
+	public void TestScanMultiBadSwitch()
+	{
+		string[] args = new[] { "-w", "1" };
+		var p = new ParseParams(args);
+		string[] names = null;
+
+		Assert.Throws<ArgumentNullException>(() => {
+			var r = p.Scan<int>(names, 2);
+		});
+
+		Assert.Throws<ArgumentOutOfRangeException>(() => {
+			var r = p.Scan<int>(new string[0], 2);
+		});
+	}
 }

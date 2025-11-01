@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rasberry.Cli;
 
@@ -52,6 +53,11 @@ public sealed class ParseParams
 	///<returns><c>ParseResult</c> value</returns>
 	public ParseResult<bool> Has(params string[] @switch)
 	{
+		ArgumentNullException.ThrowIfNull(@switch);
+		if(@switch.Length < 1) {
+			throw new ArgumentOutOfRangeException(nameof(@switch));
+		}
+
 		int ii = -1;
 		string name = null;
 		foreach(string sw in @switch) {
@@ -107,6 +113,8 @@ public sealed class ParseParams
 	///<returns><c>ParseResult</c> value</returns>
 	public ParseResult<T> Scan<T>(string @switch, T def = default, Parser<T> par = null)
 	{
+		ArgumentNullException.ThrowIfNull(@switch);
+
 		T val = def;
 		int i = Args.IndexOf(@switch);
 		if(i == -1) {
@@ -140,6 +148,11 @@ public sealed class ParseParams
 	///<returns><c>ParseResult</c> value</returns>
 	public ParseResult<T> Scan<T>(string[] @switch, T def = default, Parser<T> par = null)
 	{
+		ArgumentNullException.ThrowIfNull(@switch);
+		if(@switch.Length < 1) {
+			throw new ArgumentOutOfRangeException(nameof(@switch));
+		}
+
 		foreach(string sw in @switch) {
 			var r = Scan<T>(sw, def, par);
 			// Log.Debug($"Default sw={sw} r={r} val={val}");
@@ -150,7 +163,7 @@ public sealed class ParseParams
 				return new ParseResult<T>(r.Result, sw, r.Value, r.Error);
 			}
 		}
-		string name = @switch.Length > 0 ? @switch[0] : null;
+		string name = @switch[0];
 		return new ParseResult<T>(Result.Missing, name, default);
 	}
 
@@ -171,6 +184,8 @@ public sealed class ParseParams
 		T leftDef = default, U rightDef = default, Func<T, bool> condition = null,
 		Parser<T> leftPar = null, Parser<U> rightPar = null)
 	{
+		ArgumentNullException.ThrowIfNull(@switch);
+
 		T leftVal = leftDef;
 		U rightVal = rightDef;
 		int i = Args.IndexOf(@switch);
@@ -230,6 +245,11 @@ public sealed class ParseParams
 		T leftDef = default, U rightDef = default, Func<T, bool> condition = null,
 		Parser<T> leftPar = null, Parser<U> rightPar = null)
 	{
+		ArgumentNullException.ThrowIfNull(@switch);
+		if(@switch.Length < 1) {
+			throw new ArgumentOutOfRangeException(nameof(@switch));
+		}
+
 		foreach(string sw in @switch) {
 			var r = Scan<T, U>(sw, leftDef, rightDef, condition, leftPar, rightPar);
 			// Log.Debug($"Default sw={sw} r={r} val={val}");
@@ -242,6 +262,65 @@ public sealed class ParseParams
 		}
 		string name = @switch.Length > 0 ? @switch[0] : null;
 		return new ParseResult<(T, U)>(Result.Missing, name, (default, default));
+	}
+
+	/// <summary>
+	/// Tries to parse all parameters with the same name
+	/// </summary>
+	/// <typeparam name="T">The output type of the values attempting to be parsed</typeparam>
+	/// <param name="switch">The parameter name</param>
+	/// <param name="par">An optional custom parser to be used on the values</param>
+	/// <returns><c>ParseResult</c> with a collection of values</returns>
+	public ParseResult<IEnumerable<T>> ScanMany<T>(string @switch, Parser<T> par = null)
+	{
+		ArgumentNullException.ThrowIfNull(@switch);
+		return ScanMany(new string[] { @switch }, par);
+	}
+
+	/// <summary>
+	/// Tries to parse all parameters with the given name(s)
+	/// </summary>
+	/// <typeparam name="T">The output type of the values attempting to be parsed</typeparam>
+	/// <param name="switch">The parameter name(s)</param>
+	/// <param name="par">An optional custom parser to be used on the values</param>
+	/// <returns><c>ParseResult</c> with a collection of values</returns>
+	public ParseResult<IEnumerable<T>> ScanMany<T>(string[] @switch, Parser<T> par = null)
+	{
+		ArgumentNullException.ThrowIfNull(@switch);
+		if(@switch.Length < 1) {
+			throw new ArgumentOutOfRangeException(nameof(@switch));
+		}
+
+		bool anyFound = false;
+		int len = Args.Count;
+		var valueList = new List<T>();
+
+		for(int a = len - 1; a >= 0; a--) {
+			string item = Args[a];
+			if(!@switch.Contains(item)) { continue; }
+
+			anyFound = true;
+			if(a + 1 >= len) {
+				return new ParseResult<IEnumerable<T>>(Result.MissingArgument, item, null);
+			}
+
+			var (val, err) = ParseAndCapture(Args[a + 1], par ?? ParserInst.Parse<T>, default);
+			if(err != null) {
+				return new ParseResult<IEnumerable<T>>(Result.UnParsable, item, null, err);
+			}
+
+			valueList.Add(val);
+			Args.RemoveAt(a + 1);
+			Args.RemoveAt(a);
+		}
+
+		string name = @switch[0];
+		if(!anyFound) {
+			return new ParseResult<IEnumerable<T>>(Result.Missing, name, null);
+		}
+
+		valueList.Reverse(); //we're looking backwards so reverse to get normal ordering
+		return new ParseResult<IEnumerable<T>>(Result.Good, name, valueList);
 	}
 
 	//private parser instance

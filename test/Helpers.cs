@@ -28,6 +28,8 @@ public static class Extensions
 }
 
 #if DEBUG
+#pragma warning disable CS0414 // The field is assigned but its value is never used
+
 // This is here to help with the examples in readme.md
 class Example
 {
