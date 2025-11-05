@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Text;
 
 namespace Rasberry.Cli;
 
@@ -28,16 +28,16 @@ public static class PrintHelper
 	///<returns>returns the StringBuilder for chaining</returns>
 	public static StringBuilder ND(this StringBuilder sb, int level, string name, string desc = "")
 	{
-		if (level < 0) { level = 0; }
+		if(level < 0) { level = 0; }
 		sb
-			.Append(' ',level)
+			.Append(' ', level)
 			.Append(name)
 		;
-		if (!string.IsNullOrWhiteSpace(desc)) {
+		if(!string.IsNullOrWhiteSpace(desc)) {
 			int pad = DescriptionColumn - name.Length - level;
 			sb
-				.Append(' ',pad > 0 ? pad : 0)
-				.AppendWrap(DescriptionColumn,desc)
+				.Append(' ', pad > 0 ? pad : 0)
+				.AppendWrap(DescriptionColumn, desc)
 			;
 		}
 		else {
@@ -53,13 +53,13 @@ public static class PrintHelper
 	///<returns>returns the StringBuilder for chaining</returns>
 	public static StringBuilder WT(this StringBuilder sb, int level = 0, string text = null)
 	{
-		if (text == null) {
+		if(text == null) {
 			sb.AppendLine();
 		}
 		else {
 			sb
-				.Append(' ',level)
-				.AppendWrap(level,text)
+				.Append(' ', level)
+				.AppendWrap(level, text)
 			;
 		}
 		return sb;
@@ -73,23 +73,23 @@ public static class PrintHelper
 
 		while(c < l) {
 			//need spacing after first line
-			string o = c > 0 ? new string(' ',offset) : "";
+			string o = c > 0 ? new string(' ', offset) : "";
 			//this is the last iteration
-			if (c + w >= l) {
+			if(c + w >= l) {
 				string s = m.Substring(c);
 				c += w;
 				self.Append(o).AppendLine(s);
 			}
 			//we're in the middle
 			else {
-				string s = m.Substring(c,w);
+				string s = m.Substring(c, w);
 				c += w;
 				self.Append(o).AppendLine(s);
 			}
 		}
 
 		//we always want a newline even if m is empty
-		if (l < 1) {
+		if(l < 1) {
 			self.AppendLine();
 		}
 
@@ -116,9 +116,9 @@ public static class PrintHelper
 	{
 		foreach(object a in Enum.GetValues(t)) {
 			int v = (int)a;
-			if (excludeZero && v == 0) { continue; }
+			if(excludeZero && v == 0) { continue; }
 			yield return a;
-		};
+		}
 	}
 
 	/// <summary>Prints an enum with optional descriptions</summary>
@@ -129,20 +129,20 @@ public static class PrintHelper
 	/// <param name="nameMap">A map of replacement names for each enum value</param>
 	/// <param name="excludeZero">Exclude the zero value entry</param>
 	/// <returns>returns the StringBuilder for chaining (default false)</returns>
-	public static StringBuilder PrintEnum<T>(this StringBuilder sb, int level = 0, Func<T,string> descriptionMap = null,
-		Func<T,string> nameMap = null, bool excludeZero = false) where T : struct
+	public static StringBuilder PrintEnum<T>(this StringBuilder sb, int level = 0, Func<T, string> descriptionMap = null,
+		Func<T, string> nameMap = null, bool excludeZero = false) where T : struct
 	{
 		Func<object, string> dWrap = null;
 		Func<object, string> nWrap = null;
 
-		if (descriptionMap != null) {
+		if(descriptionMap != null) {
 			dWrap = (object o) => descriptionMap((T)o);
 		}
-		if (nameMap != null) {
+		if(nameMap != null) {
 			nWrap = (object o) => nameMap((T)o);
 		}
 
-		return PrintEnum(sb,typeof(T),level,dWrap,nWrap,excludeZero);
+		return PrintEnum(sb, typeof(T), level, dWrap, nWrap, excludeZero);
 	}
 
 	/// <summary>Prints an enum with optional descriptions</summary>
@@ -153,8 +153,8 @@ public static class PrintHelper
 	/// <param name="nameMap">A map of replacement names for each enum value</param>
 	/// <param name="excludeZero">Exclude the zero value entry (default false)</param>
 	/// <returns>returns the StringBuilder for chaining</returns>
-	public static StringBuilder PrintEnum(this StringBuilder sb, Type t, int level = 0, Func<object,string> descriptionMap = null,
-		Func<object,string> nameMap = null, bool excludeZero = false)
+	public static StringBuilder PrintEnum(this StringBuilder sb, Type t, int level = 0, Func<object, string> descriptionMap = null,
+		Func<object, string> nameMap = null, bool excludeZero = false)
 	{
 		var allEnums = EnumAll(t, excludeZero).ToArrayList();
 		int numLen = 1 + (int)Math.Floor(Math.Log10(allEnums.Count));
@@ -162,10 +162,10 @@ public static class PrintHelper
 			int eValue = (int)e;
 			string sValue = eValue.ToString();
 			int padLength = sValue.Length < numLen ? numLen - sValue.Length : 0;
-			string pad = new(' ',padLength);
+			string pad = new(' ', padLength);
 			string eName = nameMap == null ? e.ToString() : nameMap(e);
 			string eDesc = descriptionMap == null ? "" : descriptionMap(e);
-			sb.ND(level,$"{pad}{sValue}. {eName}",eDesc);
+			sb.ND(level, $"{pad}{sValue}. {eName}", eDesc);
 		}
 		return sb;
 	}

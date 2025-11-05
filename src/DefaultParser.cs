@@ -77,48 +77,48 @@ public sealed class DefaultParser : IParamsParser
 	public object Parse(Type type, string sub)
 	{
 		var nullType = Nullable.GetUnderlyingType(type);
-		if (nullType != null) { type = nullType; }
+		if(nullType != null) { type = nullType; }
 
 		//check for enum first since it might match other types
-		if (type.IsEnum) {
+		if(type.IsEnum) {
 			return Enum.Parse(type, sub, true);
 		}
 
 		//standard types have a TypeCode
 		var typeCode = Type.GetTypeCode(type);
 		switch(typeCode) {
-			case TypeCode.Boolean: return bool.Parse(sub);
-			case TypeCode.Byte:    return ParseNumber(byte.Parse,sub);
-			case TypeCode.Char:    return char.Parse(sub);
-			case TypeCode.Decimal: return ParseNumber(decimal.Parse,sub);
+		case TypeCode.Boolean: return bool.Parse(sub);
+		case TypeCode.Byte: return ParseNumber(byte.Parse, sub);
+		case TypeCode.Char: return char.Parse(sub);
+		case TypeCode.Decimal: return ParseNumber(decimal.Parse, sub);
 
-			case TypeCode.Double:
-				double d = (double)ParseNumber(double.Parse,sub);
-				if (double.IsNaN(d)) {
-					throw new ArgumentException("NaN is not allowed");
-				}
-				return d;
+		case TypeCode.Double:
+			double d = (double)ParseNumber(double.Parse, sub);
+			if(double.IsNaN(d)) {
+				throw new ArgumentException("NaN is not allowed");
+			}
+			return d;
 
-			case TypeCode.Int16: return ParseNumber(short.Parse,sub);
-			case TypeCode.Int32: return ParseNumber(int.Parse,sub);
-			case TypeCode.Int64: return ParseNumber(long.Parse,sub);
-			case TypeCode.SByte: return ParseNumber(sbyte.Parse,sub);
+		case TypeCode.Int16: return ParseNumber(short.Parse, sub);
+		case TypeCode.Int32: return ParseNumber(int.Parse, sub);
+		case TypeCode.Int64: return ParseNumber(long.Parse, sub);
+		case TypeCode.SByte: return ParseNumber(sbyte.Parse, sub);
 
-			case TypeCode.Single:
-				float f = (float)ParseNumber(float.Parse,sub);
-				if (float.IsNaN(f)) {
-					throw new ArgumentException("NaN is not allowed");
-				}
-				return f;
+		case TypeCode.Single:
+			float f = (float)ParseNumber(float.Parse, sub);
+			if(float.IsNaN(f)) {
+				throw new ArgumentException("NaN is not allowed");
+			}
+			return f;
 
-			case TypeCode.String:
-				if (string.IsNullOrWhiteSpace(sub)) {
-					throw new ArgumentException("Null, empty, or whitespace-only values are not allowed");
-				}
-				return sub;
-			case TypeCode.UInt16: return ParseNumber(ushort.Parse,sub);
-			case TypeCode.UInt32: return ParseNumber(uint.Parse,sub);
-			case TypeCode.UInt64: return ParseNumber(ulong.Parse,sub);
+		case TypeCode.String:
+			if(string.IsNullOrWhiteSpace(sub)) {
+				throw new ArgumentException("Null, empty, or whitespace-only values are not allowed");
+			}
+			return sub;
+		case TypeCode.UInt16: return ParseNumber(ushort.Parse, sub);
+		case TypeCode.UInt32: return ParseNumber(uint.Parse, sub);
+		case TypeCode.UInt64: return ParseNumber(ulong.Parse, sub);
 		}
 
 		throw new NotSupportedException($"Type {type} is not supported");
@@ -131,21 +131,21 @@ public sealed class DefaultParser : IParamsParser
 	{
 		var comp = StringComparison.InvariantCultureIgnoreCase;
 		//support hex numbers (with the 0x prefix)
-		if (s != null && allowHexBin && s.StartsWith("0x",comp)) {
+		if(s != null && allowHexBin && s.StartsWith("0x", comp)) {
 			var plain = s.Substring(PrefixLength);
-			return func(plain,NumberStyles.HexNumber,ifp);
+			return func(plain, NumberStyles.HexNumber, ifp);
 		}
 		//support binary numbers (with the 0b prefix)
-		else if (s != null && allowHexBin && s.StartsWith("0b",comp)) {
+		else if(s != null && allowHexBin && s.StartsWith("0b", comp)) {
 			var plain = s.Substring(PrefixLength);
 			// sigh.. no NumberStyles.BinaryNumber :/
 			//must pick a type here.. going with worst case
-			long n = Convert.ToInt64(plain,BinaryRadix);
-			return Convert.ChangeType(n,typeof(T));
+			long n = Convert.ToInt64(plain, BinaryRadix);
+			return Convert.ChangeType(n, typeof(T));
 		}
 		//otherwise try normal numbers
 		else {
-			return func(s,NumberStyles.Any,ifp);
+			return func(s, NumberStyles.Any, ifp);
 		}
 	}
 }

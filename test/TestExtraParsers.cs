@@ -1,7 +1,6 @@
-using Rasberry.Cli;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 
 namespace Rasberry.Cli.Tests;
 
@@ -9,27 +8,27 @@ namespace Rasberry.Cli.Tests;
 public class TestExtraParsers
 {
 	[TestMethod]
-	[DataRow("1%",    0.01)]
-	[DataRow("100%",  1.0)]
-	[DataRow("125%",  1.25)]
-	[DataRow("0.1%",  0.001)]
+	[DataRow("1%", 0.01)]
+	[DataRow("100%", 1.0)]
+	[DataRow("125%", 1.25)]
+	[DataRow("0.1%", 0.001)]
 	[DataRow("1e10%", 1e8)]
-	[DataRow("-1%",   -0.01)]
-	[DataRow("0.1",   0.1)]
-	[DataRow("1e10",  1e10)]
+	[DataRow("-1%", -0.01)]
+	[DataRow("0.1", 0.1)]
+	[DataRow("1e10", 1e10)]
 	public void ParseNumberPercentSuccess(string raw, double expected)
 	{
 		double parsed = ExtraParsers.ParseNumberPercent(raw);
-		Assert.AreEqual(expected,parsed);
+		Assert.AreEqual(expected, parsed);
 	}
 
 	[TestMethod]
-	[DataRow("a1%",      typeof(FormatException))]
-	[DataRow("a%",       typeof(FormatException))]
-	[DataRow("%",        typeof(FormatException))]
-	[DataRow("",         typeof(FormatException))]
-	[DataRow(null,       typeof(ArgumentNullException))]
-	[DataRow("10% ",     typeof(FormatException))]
+	[DataRow("a1%", typeof(FormatException))]
+	[DataRow("a%", typeof(FormatException))]
+	[DataRow("%", typeof(FormatException))]
+	[DataRow("", typeof(FormatException))]
+	[DataRow(null, typeof(ArgumentNullException))]
+	[DataRow("10% ", typeof(FormatException))]
 	[DataRow("Infinity", typeof(ArgumentOutOfRangeException))]
 	public void ParseNumberPercentFail(string raw, Type err)
 	{
@@ -39,42 +38,42 @@ public class TestExtraParsers
 	}
 
 	[TestMethod]
-	[DataRow(false,"b",      FoodStuff.Bread)]
-	[DataRow(false,"B",      FoodStuff.Bread)]
-	[DataRow(false,"Bread",  FoodStuff.Bread)]
-	[DataRow(false,"BonBons",FoodStuff.BonBons)]
-	[DataRow(false,"d",      FoodStuff.Donut)]
-	[DataRow(false,"0",      FoodStuff.Donut)]
-	[DataRow(false,"4",      FoodStuff.Bread)]
-	[DataRow(true ,"d",      FoodStuff.Dumplings)]
+	[DataRow(false, "b", FoodStuff.Bread)]
+	[DataRow(false, "B", FoodStuff.Bread)]
+	[DataRow(false, "Bread", FoodStuff.Bread)]
+	[DataRow(false, "BonBons", FoodStuff.BonBons)]
+	[DataRow(false, "d", FoodStuff.Donut)]
+	[DataRow(false, "0", FoodStuff.Donut)]
+	[DataRow(false, "4", FoodStuff.Bread)]
+	[DataRow(true, "d", FoodStuff.Dumplings)]
 	public void ParseEnumFirstLetterSuccess(bool igz, string raw, FoodStuff expected)
 	{
-		FoodStuff parsed = ExtraParsers.ParseEnumFirstLetter<FoodStuff>(raw,igz);
-		Assert.AreEqual(expected,parsed);
+		FoodStuff parsed = ExtraParsers.ParseEnumFirstLetter<FoodStuff>(raw, igz);
+		Assert.AreEqual(expected, parsed);
 	}
 
 	[TestMethod]
-	[DataRow(false,"q",     typeof(ArgumentOutOfRangeException))]
-	[DataRow(true ,"0",     typeof(ArgumentOutOfRangeException))]
-	[DataRow(true ,"Donut", typeof(ArgumentOutOfRangeException))]
+	[DataRow(false, "q", typeof(ArgumentOutOfRangeException))]
+	[DataRow(true, "0", typeof(ArgumentOutOfRangeException))]
+	[DataRow(true, "Donut", typeof(ArgumentOutOfRangeException))]
 	public void ParseEnumFirstLetterFail(bool igz, string raw, Type err)
 	{
 		Assert.That.ThrowsExceptionType(err, () => {
-			FoodStuff parsed = ExtraParsers.ParseEnumFirstLetter<FoodStuff>(raw,igz);
+			FoodStuff parsed = ExtraParsers.ParseEnumFirstLetter<FoodStuff>(raw, igz);
 		});
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(GetSuccessData), DynamicDataSourceType.Method)]
+	[DynamicData(nameof(GetSuccessData))]
 	public void ParseSequenceSuccess(string raw, FoodStuff[] expected)
 	{
 		var parser = new ParseParams.Parser<FoodStuff>((string arg) => {
 			return ExtraParsers.ParseEnumFirstLetter<FoodStuff>(arg);
 		});
 
-		var list = ExtraParsers.ParseSequence(raw,new char[] { ' ' }, parser);
+		var list = ExtraParsers.ParseSequence(raw, new char[] { ' ' }, parser);
 		var wrapList = new List<FoodStuff>(list);
-		CollectionAssert.AreEqual(expected,wrapList);
+		CollectionAssert.AreEqual(expected, wrapList);
 	}
 
 	static IEnumerable<object[]> GetSuccessData()
@@ -86,7 +85,7 @@ public class TestExtraParsers
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(GetFailData), DynamicDataSourceType.Method)]
+	[DynamicData(nameof(GetFailData))]
 	public void ParseSequenceFail(string raw, Type err)
 	{
 		var parser = new ParseParams.Parser<FoodStuff>((string arg) => {
@@ -94,7 +93,7 @@ public class TestExtraParsers
 		});
 
 		Assert.That.ThrowsExceptionType(err, () => {
-			var list = ExtraParsers.ParseSequence(raw,new char[] { ' ' }, parser);
+			var list = ExtraParsers.ParseSequence(raw, new char[] { ' ' }, parser);
 		});
 	}
 

@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Rasberry.Cli.Tests;
@@ -9,7 +8,7 @@ public class TestExtensions
 	[TestMethod]
 	public void TestWhenSuccess()
 	{
-		string[] args = new[] { "-x", "2", "-w", "1"};
+		string[] args = new[] { "-x", "2", "-w", "1" };
 		var p = new ParseParams(args);
 
 		bool isBad = false;
@@ -20,12 +19,12 @@ public class TestExtensions
 		bool isMissingArgument = false;
 
 		var check = p.Scan<double>("-x")
-			.WhenBad(n => {isBad = true; return n;})
-			.WhenGood(n => {isGood = true; return n;})
-			.WhenMissing(n => {isMissing = true; return n;})
-			.WhenInvalid(n => {isInvalid = true; return n;})
-			.WhenUnParsable(n => {isUnParsable = true; return n;})
-			.WhenMissingArgument(n => {isMissingArgument = true; return n;})
+			.WhenBad(n => { isBad = true; return n; })
+			.WhenGood(n => { isGood = true; return n; })
+			.WhenMissing(n => { isMissing = true; return n; })
+			.WhenInvalid(n => { isInvalid = true; return n; })
+			.WhenUnParsable(n => { isUnParsable = true; return n; })
+			.WhenMissingArgument(n => { isMissingArgument = true; return n; })
 			.IsBad();
 
 		Assert.IsFalse(check);
@@ -40,7 +39,7 @@ public class TestExtensions
 	[TestMethod]
 	public void TestWhenFail()
 	{
-		string[] args = new[] { "-x", "a", "-w", "1"};
+		string[] args = new[] { "-x", "a", "-w", "1" };
 		var p = new ParseParams(args);
 
 		bool isBad = false;
@@ -51,12 +50,12 @@ public class TestExtensions
 		bool isMissingArgument = false;
 
 		var check = p.Scan<double>("-x")
-			.WhenBad(n => {isBad = true; return n;})
-			.WhenGood(n => {isGood = true; return n;})
-			.WhenMissing(n => {isMissing = true; return n;})
-			.WhenInvalid(n => {isInvalid = true; return n;})
-			.WhenUnParsable(n => {isUnParsable = true; return n;})
-			.WhenMissingArgument(n => {isMissingArgument = true; return n;})
+			.WhenBad(n => { isBad = true; return n; })
+			.WhenGood(n => { isGood = true; return n; })
+			.WhenMissing(n => { isMissing = true; return n; })
+			.WhenInvalid(n => { isInvalid = true; return n; })
+			.WhenUnParsable(n => { isUnParsable = true; return n; })
+			.WhenMissingArgument(n => { isMissingArgument = true; return n; })
 			.IsBad();
 
 		Assert.IsTrue(check);
@@ -71,7 +70,7 @@ public class TestExtensions
 	[TestMethod]
 	public void TestWhenMissing()
 	{
-		string[] args = new[] { "-x", "a", "-w", "1"};
+		string[] args = new[] { "-x", "a", "-w", "1" };
 		var p = new ParseParams(args);
 
 		bool isBad = false;
@@ -82,12 +81,12 @@ public class TestExtensions
 		bool isMissingArgument = false;
 
 		var check = p.Scan<double>("-q")
-			.WhenBad(n => {isBad = true; return n;})
-			.WhenGood(n => {isGood = true; return n;})
-			.WhenMissing(n => {isMissing = true; return n;})
-			.WhenInvalid(n => {isInvalid = true; return n;})
-			.WhenUnParsable(n => {isUnParsable = true; return n;})
-			.WhenMissingArgument(n => {isMissingArgument = true; return n;})
+			.WhenBad(n => { isBad = true; return n; })
+			.WhenGood(n => { isGood = true; return n; })
+			.WhenMissing(n => { isMissing = true; return n; })
+			.WhenInvalid(n => { isInvalid = true; return n; })
+			.WhenUnParsable(n => { isUnParsable = true; return n; })
+			.WhenMissingArgument(n => { isMissingArgument = true; return n; })
 			.IsBad();
 
 		Assert.IsTrue(check);
@@ -102,7 +101,7 @@ public class TestExtensions
 	[TestMethod]
 	public void TestWhenMissingArgument()
 	{
-		string[] args = new[] { "-x", "2"};
+		string[] args = new[] { "-x", "2" };
 		var p = new ParseParams(args);
 
 		bool isBad = false;
@@ -112,13 +111,13 @@ public class TestExtensions
 		bool isUnParsable = false;
 		bool isMissingArgument = false;
 
-		var check = p.Scan<double,double>("-x")
-			.WhenBad(n => {isBad = true; return n;})
-			.WhenGood(n => {isGood = true; return n;})
-			.WhenMissing(n => {isMissing = true; return n;})
-			.WhenInvalid(n => {isInvalid = true; return n;})
-			.WhenUnParsable(n => {isUnParsable = true; return n;})
-			.WhenMissingArgument(n => {isMissingArgument = true; return n;})
+		var check = p.Scan<double, double>("-x")
+			.WhenBad(n => { isBad = true; return n; })
+			.WhenGood(n => { isGood = true; return n; })
+			.WhenMissing(n => { isMissing = true; return n; })
+			.WhenInvalid(n => { isInvalid = true; return n; })
+			.WhenUnParsable(n => { isUnParsable = true; return n; })
+			.WhenMissingArgument(n => { isMissingArgument = true; return n; })
 			.IsBad();
 
 		Assert.IsTrue(check);
@@ -133,7 +132,7 @@ public class TestExtensions
 	[TestMethod]
 	public void TestWhenExpectFail()
 	{
-		string[] args = new[] { "-x", "2"};
+		string[] args = new[] { "-x", "2" };
 		var p = new ParseParams(args);
 
 		bool isBad = false;
@@ -144,12 +143,12 @@ public class TestExtensions
 		bool isMissingArgument = false;
 
 		var check = p.Scan<double>("-z")
-			.WhenBad(n => {isBad = true; return n;})
-			.WhenGood(n => {isGood = true; return n;})
-			.WhenMissing(n => {isMissing = true; return n;})
-			.WhenInvalid(n => {isInvalid = true; return n;})
-			.WhenUnParsable(n => {isUnParsable = true; return n;})
-			.WhenMissingArgument(n => {isMissingArgument = true; return n;})
+			.WhenBad(n => { isBad = true; return n; })
+			.WhenGood(n => { isGood = true; return n; })
+			.WhenMissing(n => { isMissing = true; return n; })
+			.WhenInvalid(n => { isInvalid = true; return n; })
+			.WhenUnParsable(n => { isUnParsable = true; return n; })
+			.WhenMissingArgument(n => { isMissingArgument = true; return n; })
 			.IsBad();
 
 		Assert.IsTrue(check);
@@ -164,7 +163,7 @@ public class TestExtensions
 	[TestMethod]
 	public void TestWhenChangeResult()
 	{
-		string[] args = new[] { "-x", "2"};
+		string[] args = new[] { "-x", "2" };
 		var p = new ParseParams(args);
 
 		bool isBad = false;
@@ -181,10 +180,10 @@ public class TestExtensions
 			.WhenGood(n => {
 				isGood = true; return n with { Result = ParseParams.Result.UnParsable };
 			})
-			.WhenMissing(n => {isMissing = true; return n;})
-			.WhenInvalid(n => {isInvalid = true; return n;})
-			.WhenUnParsable(n => {isUnParsable = true; return n;})
-			.WhenMissingArgument(n => { isMissingArgument = true; return n;})
+			.WhenMissing(n => { isMissing = true; return n; })
+			.WhenInvalid(n => { isInvalid = true; return n; })
+			.WhenUnParsable(n => { isUnParsable = true; return n; })
+			.WhenMissingArgument(n => { isMissingArgument = true; return n; })
 			.IsBad();
 
 		Assert.IsTrue(check); //the second update is back to bad
@@ -199,7 +198,7 @@ public class TestExtensions
 	[TestMethod]
 	public void TestWhenSetDefault()
 	{
-		string[] args = new[] { "-x", "2"};
+		string[] args = new[] { "-x", "2" };
 		var p = new ParseParams(args);
 
 		bool isBad = false;
@@ -213,10 +212,10 @@ public class TestExtensions
 		var check = p.Scan<double>("-z", 3.0)
 			.WhenBad(n => { isBad = true; return n; })
 			.WhenGood(n => { isGood = true; val = n.Value; return n; })
-			.WhenMissing(n => {isMissing = true; val = n.Value; return n;})
-			.WhenInvalid(n => {isInvalid = true; return n;})
-			.WhenUnParsable(n => {isUnParsable = true; return n;})
-			.WhenMissingArgument(n => { isMissingArgument = true; return n;})
+			.WhenMissing(n => { isMissing = true; val = n.Value; return n; })
+			.WhenInvalid(n => { isInvalid = true; return n; })
+			.WhenUnParsable(n => { isUnParsable = true; return n; })
+			.WhenMissingArgument(n => { isMissingArgument = true; return n; })
 			.IsBad();
 
 		Assert.IsTrue(check);
@@ -232,7 +231,7 @@ public class TestExtensions
 	[TestMethod]
 	public void TestWhenSetValue()
 	{
-		string[] args = new[] { "-x", "2"};
+		string[] args = new[] { "-x", "2" };
 		var p = new ParseParams(args);
 
 		bool isBad = false;
@@ -246,10 +245,10 @@ public class TestExtensions
 		var check = p.Scan<double>("-x", 3.0)
 			.WhenBad(n => { isBad = true; return n; })
 			.WhenGood(n => { isGood = true; val = n.Value; return n; })
-			.WhenMissing(n => {isMissing = true; val = n.Value; return n;})
-			.WhenInvalid(n => {isInvalid = true; return n;})
-			.WhenUnParsable(n => {isUnParsable = true; return n;})
-			.WhenMissingArgument(n => { isMissingArgument = true; return n;})
+			.WhenMissing(n => { isMissing = true; val = n.Value; return n; })
+			.WhenInvalid(n => { isInvalid = true; return n; })
+			.WhenUnParsable(n => { isUnParsable = true; return n; })
+			.WhenMissingArgument(n => { isMissingArgument = true; return n; })
 			.IsBad();
 
 		Assert.IsFalse(check);
@@ -265,7 +264,7 @@ public class TestExtensions
 	[TestMethod]
 	public void TestWhenCustom()
 	{
-		string[] args = new[] { "-x", "2"};
+		string[] args = new[] { "-x", "2" };
 		var p = new ParseParams(args);
 
 		bool isBad = false;

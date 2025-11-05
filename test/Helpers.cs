@@ -1,6 +1,6 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Rasberry.Cli.Tests;
 
@@ -28,6 +28,8 @@ public static class Extensions
 }
 
 #if DEBUG
+#pragma warning disable CS0414 // The field is assigned but its value is never used
+
 // This is here to help with the examples in readme.md
 class Example
 {
@@ -35,13 +37,13 @@ class Example
 	{
 		var p = new ParseParams(args);
 
-		if (p.Has("-a").IsGood()) {
+		if(p.Has("-a").IsGood()) {
 			HasOptionA = true;
 		}
 
 		//example using temporary variable
 		var rb = p.Scan<double>("-b");
-		if (rb.IsBad()) { //use IsBad when the parameter is required
+		if(rb.IsBad()) { //use IsBad when the parameter is required
 			string err = rb.Error == null ? "" : " - " + rb.Error.ToString();
 			Console.WriteLine($"something is wrong with your {rb.Name} option{err}");
 			return false;
@@ -49,9 +51,9 @@ class Example
 		OptionB = rb.Value;
 
 		//example using 'When' extensions
-		if (p.Scan<double>("-c")
+		if(p.Scan<double>("-c")
 			.WhenGood(r => { OptionC = r.Value; return r; })
-			.WhenMissing(r => { Console.WriteLine($"option {r.Name} is missing"); return r;})
+			.WhenMissing(r => { Console.WriteLine($"option {r.Name} is missing"); return r; })
 			.WhenUnParsable(r => { Console.WriteLine($"could not parse {r.Name} option - {r.Error}"); return r; })
 			.IsInvalid() //use IsInvalid when the parameter is optional
 		) {
@@ -70,60 +72,60 @@ class Example
 		var p = new ParseParams(args);
 
 		{
-		double OptionD;
-		var parser = new ParseParams.Parser<double>((string s) => {
-			return ExtraParsers.ParseNumberPercent(s);
-		});
+			double OptionD;
+			var parser = new ParseParams.Parser<double>((string s) => {
+				return ExtraParsers.ParseNumberPercent(s);
+			});
 
-		if (p.Scan("-d", par: parser)
-			.WhenGood(r => { OptionD = r.Value; return r;})
-			.WhenBad(r => {
-				string err = r.Error == null ? "" : " - " + r.Error.ToString();
-				Console.WriteLine($"something is wrong with your {r.Name} option{err}");
-				return r;
-			})
-			.IsInvalid()
-		) {
-			return false;
-		}
-		}
-
-		{
-		System.Drawing.Color MyColor;
-		var parser = new ParseParams.Parser<System.Drawing.Color>(ExtraParsers.ParseColor);
-		if (p.Scan("-c", par: parser)
-			.WhenGood(r => { MyColor = r.Value; return r; })
-			.IsInvalid()
-		) {
-			return false;
-		}
+			if(p.Scan("-d", par: parser)
+				.WhenGood(r => { OptionD = r.Value; return r; })
+				.WhenBad(r => {
+					string err = r.Error == null ? "" : " - " + r.Error.ToString();
+					Console.WriteLine($"something is wrong with your {r.Name} option{err}");
+					return r;
+				})
+				.IsInvalid()
+			) {
+				return false;
+			}
 		}
 
 		{
-		FoodStuff Food;
-		var parser = new ParseParams.Parser<FoodStuff>((string s) => {
-			return ExtraParsers.ParseEnumFirstLetter<FoodStuff>(s, ignoreZero: true);
-		});
-		if (p.Scan("-c", par: parser)
-			.WhenGood(r => { Food = r.Value; return r;})
-			.IsInvalid()
-		) {
-			return false;
-		}
+			System.Drawing.Color MyColor;
+			var parser = new ParseParams.Parser<System.Drawing.Color>(ExtraParsers.ParseColor);
+			if(p.Scan("-c", par: parser)
+				.WhenGood(r => { MyColor = r.Value; return r; })
+				.IsInvalid()
+			) {
+				return false;
+			}
 		}
 
 		{
-		IReadOnlyList<int> Seq;
-		var parser = new ParseParams.Parser<IReadOnlyList<int>>((string s) => {
-			return ExtraParsers.ParseSequence<int>(s,new char[] {','});
-		});
-
-		if (p.Scan("-s", par: parser)
-			.WhenGood(r => { Seq = r.Value; return r; })
-			.IsInvalid()
-		) {
-			return false;
+			FoodStuff Food;
+			var parser = new ParseParams.Parser<FoodStuff>((string s) => {
+				return ExtraParsers.ParseEnumFirstLetter<FoodStuff>(s, ignoreZero: true);
+			});
+			if(p.Scan("-c", par: parser)
+				.WhenGood(r => { Food = r.Value; return r; })
+				.IsInvalid()
+			) {
+				return false;
+			}
 		}
+
+		{
+			IReadOnlyList<int> Seq;
+			var parser = new ParseParams.Parser<IReadOnlyList<int>>((string s) => {
+				return ExtraParsers.ParseSequence<int>(s, new char[] { ',' });
+			});
+
+			if(p.Scan("-s", par: parser)
+				.WhenGood(r => { Seq = r.Value; return r; })
+				.IsInvalid()
+			) {
+				return false;
+			}
 		}
 
 		return true;
